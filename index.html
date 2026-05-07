@@ -3,27 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Premium Article Request</title>
+    <title>Heymale - Article Request System v3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f8fafc; 
+            background-color: #f0f2f5; 
             color: #1e293b;
         }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
         .table-container { 
             overflow-x: auto; 
-            max-height: 75vh; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
+            max-height: 70vh; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            background: white;
         }
 
         table { border-collapse: separate; border-spacing: 0; width: 100%; }
@@ -31,18 +26,18 @@
         th { 
             position: sticky; 
             top: 0; 
-            z-index: 20; 
+            z-index: 30; 
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
         }
 
-        /* Sticky Columns for identification */
         .sticky-left {
             position: sticky;
             left: 0;
-            z-index: 15;
+            z-index: 25;
             background-color: white;
             border-right: 2px solid #e2e8f0 !important;
         }
@@ -52,142 +47,110 @@
             background: transparent; 
             width: 100%; 
             height: 100%; 
-            padding: 10px 12px; 
+            padding: 12px 10px; 
             font-size: 13px;
             transition: all 0.2s;
         }
         
-        input:focus { 
-            outline: none; 
-            background-color: white; 
-            box-shadow: inset 0 0 0 2px #3b82f6;
-        }
+        input:focus { outline: none; background-color: #f8fafc; box-shadow: inset 0 0 0 2px #3b82f6; }
 
-        /* Hide number input arrows */
         input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-        td { 
-            border-right: 1px solid #e2e8f0; 
-            border-bottom: 1px solid #e2e8f0; 
-            padding: 0; 
-            white-space: nowrap;
-        }
+        td { border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 0; }
 
-        /* Section Colors */
-        .col-product { background-color: #f0f9ff; }
-        .col-distribution { background-color: #fffbeb; }
-        .col-stores { background-color: #ecfdf5; }
+        .col-product { background-color: #ffffff; }
+        .col-distribution { background-color: #fefce8; }
+        .col-stores { background-color: #f0fdf4; }
+        .col-priority-low { background-color: #fff1f2; } /* Muku Stores */
         .col-results { background-color: #f8fafc; font-weight: 700; }
 
         .row-hover:hover { background-color: #f1f5f9; }
         .row-hover:hover .sticky-left { background-color: #f1f5f9; }
 
-        .btn-gradient {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            transition: transform 0.1s;
+        .btn-action {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-gradient:active { transform: scale(0.95); }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            display: none;
-            z-index: 100;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .btn-action:active { transform: translateY(0); }
 
         @media print { 
             .no-print { display: none; } 
             .table-container { max-height: none; overflow: visible; box-shadow: none; } 
-            body { background: white; padding: 0; }
         }
     </style>
 </head>
-<body class="p-6">
-
-    <div id="toast" class="toast">Data berhasil disalin!</div>
+<body class="p-4 lg:p-8">
 
     <!-- Header Section -->
-    <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
-        <div class="flex items-center gap-4">
-            <div class="bg-black text-white p-3 rounded-xl font-black text-2xl tracking-tighter shadow-lg">HM</div>
+    <header class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 no-print">
+        <div class="flex items-center gap-5">
+            <div class="bg-indigo-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-200">HM</div>
             <div>
-                <h1 class="text-2xl font-extrabold tracking-tight text-slate-800">Article Request System</h1>
-                <p class="text-slate-500 text-sm font-medium">Dashboard Distribusi Stok Offline (47%) & Online (53%)</p>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Article Distribution</h1>
+                <p class="text-slate-500 text-sm font-semibold flex items-center gap-2">
+                    <span class="inline-block w-2 h-2 bg-green-500 rounded-full"></span> 
+                    Logic: Online 53% / Offline 47% (Priority Distribution Active)
+                </p>
             </div>
         </div>
         
-        <div class="flex gap-3">
-            <button onclick="addRow()" class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-blue-700 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        <div class="flex flex-wrap gap-3">
+            <button onclick="addRow()" class="btn-action flex items-center gap-2 bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold shadow-sm hover:border-indigo-600 hover:text-indigo-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
                 Tambah Baris
             </button>
-            <button onclick="copyToGSheet()" class="flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-emerald-700 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-                Copy untuk GSheet
-            </button>
-            <button onclick="window.print()" class="flex items-center gap-2 btn-gradient text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                Cetak PDF
+            <button onclick="exportToCSV()" class="btn-action flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Export GSheet (CSV)
             </button>
         </div>
     </header>
 
     <!-- Main Table Table -->
-    <div class="table-container border border-slate-200 bg-white">
+    <div class="table-container border border-slate-200">
         <table id="articleTable">
             <thead>
-                <!-- Row 1: Ratio Display -->
-                <tr class="bg-slate-800 text-white border-b border-slate-700">
-                    <th colspan="8" class="px-4 py-3 bg-slate-900 sticky-left">Article Info</th>
-                    <th class="bg-blue-600 px-2 py-3">PO</th>
-                    <th class="bg-indigo-600 px-2 py-3 border-l border-indigo-500">53% ON</th>
-                    <th class="bg-amber-500 px-2 py-3 border-l border-amber-400">47% OFF</th>
-                    <!-- Per Store Header Percentages -->
-                    <th colspan="14" class="bg-emerald-600 px-4 py-3 border-l border-emerald-500">Store Distribution (Manual Adjust Allowed)</th>
-                    <th colspan="3" class="bg-slate-700 px-2 py-3 border-l border-slate-600">Verification</th>
-                    <th class="bg-slate-900 no-print"></th>
+                <tr class="bg-slate-900 text-white uppercase text-[9px] tracking-widest">
+                    <th colspan="8" class="px-4 py-4 sticky-left bg-slate-950">Informasi Artikel</th>
+                    <th class="bg-blue-600 px-2 py-4">PO</th>
+                    <th class="bg-indigo-700 px-2 py-4">ON (53%)</th>
+                    <th class="bg-amber-600 px-2 py-4">OFF (47%)</th>
+                    <th colspan="12" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800">Distribusi Store Regular</th>
+                    <th colspan="2" class="bg-rose-700 px-4 py-4 border-l border-rose-800">Last Priority</th>
+                    <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th>
+                    <th class="bg-slate-950 no-print"></th>
                 </tr>
-                <!-- Row 2: Columns Labels -->
-                <tr class="bg-white text-slate-500 shadow-sm">
+                <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200">
                     <th class="px-4 py-3 sticky-left min-w-[100px]">Brand</th>
-                    <th class="px-4 py-3 min-w-[100px]">Tag Code</th>
+                    <th class="px-4 py-3 min-w-[100px]">Kode Tag</th>
                     <th class="px-4 py-3 min-w-[130px]">SKU</th>
-                    <th class="px-4 py-3 min-w-[180px]">Name</th>
-                    <th class="px-4 py-3 min-w-[120px]">Category</th>
+                    <th class="px-4 py-3 min-w-[180px]">Name Tag</th>
+                    <th class="px-4 py-3 min-w-[120px]">Kategori</th>
                     <th class="px-4 py-3 min-w-[70px]">Size</th>
                     <th class="px-4 py-3 min-w-[120px]">Price</th>
                     <th class="px-4 py-3 min-w-[110px]">Color</th>
-                    <th class="px-4 py-3 bg-blue-50 text-blue-700 font-black italic">QTY PO</th>
-                    <th class="px-4 py-3 bg-indigo-50 text-indigo-700">Online</th>
-                    <th class="px-4 py-3 bg-amber-50 text-amber-700">Offline</th>
+                    <th class="px-4 py-3 bg-blue-50 text-blue-800">Qty PO</th>
+                    <th class="px-4 py-3 bg-indigo-50 text-indigo-800">Online</th>
+                    <th class="px-4 py-3 bg-amber-50 text-amber-800">Offline</th>
                     
-                    <!-- Store Names -->
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Padang</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">S. Penuh</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Makassar</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Pekanbaru</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">BXC</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Aceh</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Puri</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Sun Plaza</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">PIM</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Palembang</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Paskal</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Semarang</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Muku Sby</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-800">Muku Blk M</th>
+                    <!-- Store Names Labels -->
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Padang</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">S.Penuh</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Makassar</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Pekanbaru</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">BXC</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Aceh</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Puri</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Sun Plaza</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">PIM</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Palembang</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Paskal BDG</th>
+                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Semarang</th>
+                    
+                    <!-- Last Priority -->
+                    <th class="px-3 py-3 bg-rose-50 text-rose-900">Muku Sby</th>
+                    <th class="px-3 py-3 bg-rose-50 text-rose-900">Muku Blok M</th>
                     
                     <th class="px-4 py-3 bg-slate-100 text-slate-800">Total</th>
                     <th class="px-4 py-3 bg-green-100 text-green-800">Stock</th>
@@ -195,59 +158,74 @@
                     <th class="no-print"></th>
                 </tr>
             </thead>
-            <tbody id="tableBody">
-                <!-- Rows go here -->
-            </tbody>
+            <tbody id="tableBody"></tbody>
         </table>
     </div>
 
-    <!-- Footer Info -->
-    <div class="mt-6 flex flex-col md:flex-row justify-between items-center text-xs text-slate-400 font-medium">
-        <p>* Klik pada angka toko untuk menyesuaikan alokasi secara manual.</p>
-        <p class="no-print italic">Heymale Management System v2.1 - Custom Adjust Edition</p>
+    <!-- Instructions / Footer -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 no-print">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="text-sm font-extrabold text-slate-800 mb-2 uppercase tracking-wider">Prioritas Alokasi</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Sistem mendahulukan store dengan rasio tinggi. Store Muku dan store dengan rasio terendah akan dikosongkan jika Qty Offline tidak mencukupi.</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="text-sm font-extrabold text-slate-800 mb-2 uppercase tracking-wider">Cara Edit Manual</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Anda bisa mengubah angka di kolom store secara manual. Kolom <strong>Sisa</strong> akan berubah merah jika alokasi manual Anda melebihi atau kurang dari Qty Offline.</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="text-sm font-extrabold text-slate-800 mb-2 uppercase tracking-wider">Export Format</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Gunakan tombol <strong>Export GSheet</strong> untuk mengunduh file CSV. Anda bisa langsung mengunggah file tersebut ke Google Drive.</p>
+        </div>
     </div>
 
     <script>
-        const storeNames = [
-            "PADANG", "SUNGAI PENUH", "MAKASSAR", "PEKANBARU", "BXC", 
-            "ACEH", "PURI", "SUN PLAZA", "PIM", "PALEMBANG", 
-            "PASKAL", "SEMARANG", "MUKU SBY", "MUKU BLOK M"
+        // Definisi Store dengan Properti Prioritas
+        const stores = [
+            { id: 'padang', name: "HEYMALE PADANG", ratioShirt: 11.62, ratioPants: 11.93, ratioJacket: 11.93, isMuku: false },
+            { id: 'sungai', name: "HEYMALE SUNGAI PENUH", ratioShirt: 10.95, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
+            { id: 'makassar', name: "HEYMALE MAKASSAR", ratioShirt: 10.81, ratioPants: 11.18, ratioJacket: 10.31, isMuku: false },
+            { id: 'pekanbaru', name: "HEYMALE PEKANBARU", ratioShirt: 10.17, ratioPants: 11.93, ratioJacket: 11.93, isMuku: false },
+            { id: 'bxc', name: "HEYMALE BXC", ratioShirt: 9.89, ratioPants: 10.83, ratioJacket: 10.83, isMuku: false },
+            { id: 'aceh', name: "HEYMALE ACEH", ratioShirt: 9.75, ratioPants: 8.78, ratioJacket: 8.78, isMuku: false },
+            { id: 'puri', name: "HEYMALE PURI", ratioShirt: 9.47, ratioPants: 10.64, ratioJacket: 10.64, isMuku: false },
+            { id: 'sunplaza', name: "HEYMALE SUN PLAZA MEDAN", ratioShirt: 9.33, ratioPants: 9.69, ratioJacket: 9.69, isMuku: false },
+            { id: 'pim', name: "HEYMALE PIM", ratioShirt: 8.99, ratioPants: 11.18, ratioJacket: 11.18, isMuku: false },
+            { id: 'palembang', name: "HEYMALE PALEMBANG", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
+            { id: 'paskal', name: "HEYMALE PASKAL BANDUNG", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
+            { id: 'semarang', name: "HEYMALE SEMARANG", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
+            { id: 'mukusby', name: "HEYMALE MUKU SURABAYA", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: true },
+            { id: 'mukublokm', name: "HEYMALE MUKU BLOK M", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: true }
         ];
-
-        const ratios = {
-            SHIRT: [11.62, 10.95, 10.81, 10.17, 9.89, 9.75, 9.47, 9.33, 8.99, 8.99, 8.99, 8.99, 8.99, 8.99],
-            PANTS: [11.93, 8.09, 11.18, 11.93, 10.83, 8.78, 10.64, 9.69, 11.18, 8.09, 8.09, 8.09, 8.09, 8.09],
-            JACKET: [11.93, 8.09, 10.31, 11.93, 10.83, 8.78, 10.64, 9.69, 11.18, 8.09, 8.09, 8.09, 8.09, 8.09]
-        };
 
         function addRow() {
             const tbody = document.getElementById('tableBody');
-            const rowId = Date.now() + Math.random().toString(36).substr(2, 9);
+            const rowId = Math.random().toString(36).substr(2, 9);
             const tr = document.createElement('tr');
             tr.id = `row-${rowId}`;
             tr.className = "row-hover transition-colors";
 
             let storeCells = "";
-            storeNames.forEach((name, index) => {
-                storeCells += `<td class="col-stores"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}')" class="text-center font-semibold text-slate-700" value="0"></td>`;
+            stores.forEach((store, index) => {
+                const cellClass = store.isMuku ? "col-priority-low" : "col-stores";
+                storeCells += `<td class="${cellClass}"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}')" class="text-center font-bold text-slate-800" value="0"></td>`;
             });
 
             tr.innerHTML = `
-                <td class="sticky-left"><input type="text" value="HEYMALE" class="font-bold"></td>
-                <td class="col-product"><input type="text" placeholder="MOWW"></td>
-                <td class="col-product"><input type="text" placeholder="SKU-2024"></td>
-                <td class="col-product"><input type="text" placeholder="MOORVE BOXY"></td>
+                <td class="sticky-left"><input type="text" value="HEYMALE" class="font-bold text-indigo-600"></td>
+                <td class="col-product"><input type="text" placeholder="KODE"></td>
+                <td class="col-product"><input type="text" placeholder="SKU-XXXX"></td>
+                <td class="col-product"><input type="text" placeholder="NAMA ARTIKEL"></td>
                 <td class="col-product">
-                    <select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold cursor-pointer">
+                    <select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold text-slate-700 uppercase">
                         <option value="SHIRT">SHIRT</option>
                         <option value="PANTS">PANTS</option>
-                        <option value="JACKET" selected>JACKET</option>
+                        <option value="JACKET">JACKET</option>
                     </select>
                 </td>
-                <td class="col-product"><input type="text" placeholder="XL" class="text-center font-bold"></td>
-                <td class="col-product"><input type="number" placeholder="399000"></td>
-                <td class="col-product"><input type="text" placeholder="BLACK"></td>
-                <td class="bg-blue-50/50"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-lg" placeholder="0"></td>
+                <td class="col-product"><input type="text" placeholder="ALL" class="text-center font-bold"></td>
+                <td class="col-product"><input type="number" placeholder="0"></td>
+                <td class="col-product"><input type="text" placeholder="WARNA"></td>
+                <td class="bg-blue-50/50"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-base" placeholder="0"></td>
                 <td class="col-distribution text-center text-indigo-700 font-bold" id="online-${rowId}">0</td>
                 <td class="col-distribution text-center text-amber-700 font-bold" id="offline-${rowId}">0</td>
                 ${storeCells}
@@ -264,8 +242,7 @@
         }
 
         function calculateRow(rowId) {
-            const qtyPoInput = document.getElementById(`qty-${rowId}`);
-            const qtyPo = parseInt(qtyPoInput.value) || 0;
+            const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
             const category = document.getElementById(`cat-${rowId}`).value;
             
             const qtyOnline = Math.round(qtyPo * 0.53);
@@ -274,20 +251,45 @@
             document.getElementById(`online-${rowId}`).innerText = qtyOnline;
             document.getElementById(`offline-${rowId}`).innerText = qtyOffline;
 
-            const selectedRatios = ratios[category];
-            let totalAllocated = 0;
+            // Logic Pembagian Berdasarkan Prioritas
+            // 1. Ambil Rasio Sesuai Kategori
+            const ratioKey = category === 'SHIRT' ? 'ratioShirt' : (category === 'PANTS' ? 'ratioPants' : 'ratioJacket');
+            
+            // 2. Normalisasi Rasio ke 100%
+            const totalRatio = stores.reduce((sum, s) => sum + s[ratioKey], 0);
+            
+            // 3. Buat Object Store yang Terurut Berdasarkan Prioritas
+            // Urutan: Regular (Rasio Besar -> Kecil) -> Muku Surabaya -> Muku Blok M
+            const sortedStores = stores.map((s, idx) => ({ ...s, originalIdx: idx }))
+                .sort((a, b) => {
+                    if (a.isMuku !== b.isMuku) return a.isMuku ? 1 : -1; // Muku di akhir
+                    return b[ratioKey] - a[ratioKey]; // Rasio besar di awal
+                });
 
-            selectedRatios.forEach((ratio, index) => {
-                const input = document.getElementById(`store-${index}-${rowId}`);
-                let storeQty = Math.round(qtyOffline * (ratio / 100));
-                
-                if (index === selectedRatios.length - 1) {
-                    storeQty = qtyOffline - totalAllocated;
-                    if (storeQty < 0) storeQty = 0;
-                }
-                
-                totalAllocated += storeQty;
-                input.value = storeQty;
+            let distributed = 0;
+            const results = new Array(stores.length).fill(0);
+
+            // 4. Hitung Nilai Dasar (Floor)
+            sortedStores.forEach(s => {
+                const normalizedRatio = s[ratioKey] / totalRatio;
+                let share = Math.floor(qtyOffline * normalizedRatio);
+                results[s.originalIdx] = share;
+                distributed += share;
+            });
+
+            // 5. Bagi Sisa (Remainder) 1 per 1 Berdasarkan Urutan Prioritas
+            let remainder = qtyOffline - distributed;
+            let i = 0;
+            while (remainder > 0 && i < sortedStores.length) {
+                const targetIdx = sortedStores[i].originalIdx;
+                results[targetIdx] += 1;
+                remainder--;
+                i++;
+            }
+
+            // 6. Masukkan ke Input Store
+            results.forEach((val, idx) => {
+                document.getElementById(`store-${idx}-${rowId}`).value = val;
             });
 
             updateTotals(rowId, qtyOffline);
@@ -300,90 +302,85 @@
 
         function updateTotals(rowId, qtyOffline) {
             let totalAllocated = 0;
-            storeNames.forEach((_, index) => {
+            stores.forEach((_, index) => {
                 const val = parseInt(document.getElementById(`store-${index}-${rowId}`).value) || 0;
                 totalAllocated += val;
             });
 
-            const totalCell = document.getElementById(`total-${rowId}`);
-            const stockCell = document.getElementById(`stock-${rowId}`);
-            const sisaCell = document.getElementById(`sisa-${rowId}`);
-            
-            totalCell.innerText = totalAllocated;
-            stockCell.innerText = totalAllocated;
+            document.getElementById(`total-${rowId}`).innerText = totalAllocated;
+            document.getElementById(`stock-${rowId}`).innerText = totalAllocated;
             
             const sisa = qtyOffline - totalAllocated;
+            const sisaCell = document.getElementById(`sisa-${rowId}`);
             sisaCell.innerText = sisa;
             
             if (sisa !== 0) {
-                sisaCell.classList.add('bg-red-500', 'text-white');
-                sisaCell.classList.remove('bg-red-50', 'text-red-600');
+                sisaCell.className = "col-results text-center bg-red-600 text-white font-bold";
             } else {
-                sisaCell.classList.remove('bg-red-500', 'text-white');
-                sisaCell.classList.add('bg-red-50', 'text-red-600');
+                sisaCell.className = "col-results text-center bg-red-50 text-red-600";
             }
         }
 
         function removeRow(rowId) {
-            if(confirm('Hapus baris ini?')) {
+            if(confirm('Hapus baris artikel ini?')) {
                 document.getElementById(`row-${rowId}`).remove();
             }
         }
 
-        function copyToGSheet() {
+        function exportToCSV() {
             const table = document.getElementById('articleTable');
-            let copyText = "";
+            let csvRows = [];
             
-            // Header
+            // Header Labels
             const headers = Array.from(table.querySelectorAll('thead tr:nth-child(2) th'))
                 .filter(th => !th.classList.contains('no-print'))
-                .map(th => th.innerText.trim());
-            copyText += headers.join("\t") + "\n";
+                .map(th => `"${th.innerText.trim()}"`);
+            csvRows.push(headers.join(","));
 
-            // Rows
+            // Body Data
             const rows = table.querySelectorAll('tbody tr');
             rows.forEach(tr => {
                 const rowData = [];
-                const inputs = tr.querySelectorAll('input, select');
-                const divs = tr.querySelectorAll('td.col-distribution, td.col-results');
-                
-                // Urutan data harus sesuai urutan kolom tabel
-                // 1. Brand, Tag, SKU, Name (Inputs)
-                for(let i=0; i<4; i++) rowData.push(inputs[i].value);
-                // 2. Category (Select)
-                rowData.push(inputs[4].value);
-                // 3. Size, Price, Color, Qty PO (Inputs)
-                for(let i=5; i<9; i++) rowData.push(inputs[i].value);
-                // 4. Online, Offline (Divs/Cells)
-                rowData.push(document.getElementById(`online-${tr.id.split('-')[1]}`).innerText);
-                rowData.push(document.getElementById(`offline-${tr.id.split('-')[1]}`).innerText);
-                // 5. Stores (Inputs)
-                const storeIdxStart = 9;
-                for(let i=0; i<storeNames.length; i++) rowData.push(inputs[storeIdxStart + i].value);
-                // 6. Total, Stock, Sisa (Cells)
                 const rowIdSuffix = tr.id.split('-')[1];
-                rowData.push(document.getElementById(`total-${rowIdSuffix}`).innerText);
-                rowData.push(document.getElementById(`stock-${rowIdSuffix}`).innerText);
-                rowData.push(document.getElementById(`sisa-${rowIdSuffix}`).innerText);
+                const inputs = tr.querySelectorAll('input, select');
+                
+                // Urutan kolom sesuai UI:
+                // Brand (0), Kode (1), SKU (2), Name (3), Category (4), Size (5), Price (6), Color (7), Qty PO (8)
+                for(let i=0; i<=8; i++) rowData.push(`"${inputs[i].value}"`);
+                
+                // Online, Offline
+                rowData.push(`"${document.getElementById(`online-${rowIdSuffix}`).innerText}"`);
+                rowData.push(`"${document.getElementById(`offline-${rowIdSuffix}`).innerText}"`);
+                
+                // Store 0 - 13 (Inputs)
+                const storeIdxStart = 9;
+                for(let i=0; i<stores.length; i++) {
+                    rowData.push(`"${inputs[storeIdxStart + i].value}"`);
+                }
+                
+                // Total, Stock, Sisa
+                rowData.push(`"${document.getElementById(`total-${rowIdSuffix}`).innerText}"`);
+                rowData.push(`"${document.getElementById(`stock-${rowIdSuffix}`).innerText}"`);
+                rowData.push(`"${document.getElementById(`sisa-${rowIdSuffix}`).innerText}"`);
 
-                copyText += rowData.join("\t") + "\n";
+                csvRows.push(rowData.join(","));
             });
 
-            const el = document.createElement('textarea');
-            el.value = copyText;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-
-            const toast = document.getElementById('toast');
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            const csvString = csvRows.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            const timestamp = new Date().toISOString().slice(0, 10);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", `heymale_request_artikel_${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        window.onload = () => {
-            for(let i=0; i<8; i++) addRow();
-        };
+        window.onload = () => { for(let i=0; i<5; i++) addRow(); };
     </script>
 </body>
 </html>
