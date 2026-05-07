@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v3.2</title>
+    <title>Heymale - Article Request System v3.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -84,12 +84,11 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background: #10b981;
+            background: #1e293b;
             color: white;
             padding: 12px 24px;
             border-radius: 12px;
             font-weight: bold;
-            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
             display: none;
             z-index: 100;
             animation: slideUp 0.3s ease-out;
@@ -103,7 +102,7 @@
 </head>
 <body class="p-4 lg:p-8">
 
-    <div id="toast">Spreadsheet Berhasil Dibuat!</div>
+    <div id="toast">Membuka Spreadsheet...</div>
 
     <!-- Header Section -->
     <header class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 no-print">
@@ -123,9 +122,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
                 Tambah Baris
             </button>
-            <button onclick="exportToSpreadsheet()" class="btn-action flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Buat Spreadsheet (CSV)
+            <button onclick="openSpreadsheetView()" class="btn-action flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Buka Spreadsheet (Live View)
             </button>
         </div>
     </header>
@@ -185,8 +184,8 @@
 
     <!-- Footer -->
     <div class="mt-6 flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-        <p>Heymale Management System v3.2</p>
-        <p>Logika Spreadsheet: Ekspor Otomatis ke File CSV</p>
+        <p>Heymale Management System v3.3</p>
+        <p>Logika: Prioritas Toko Reguler > Prioritas Toko Muku</p>
     </div>
 
     <script>
@@ -328,65 +327,103 @@
             }
         }
 
-        function exportToSpreadsheet() {
+        function openSpreadsheetView() {
             const table = document.getElementById('articleTable');
             const rows = table.querySelectorAll('tbody tr');
             
-            // CSV Header
-            let csvContent = "data:text/csv;charset=utf-8,";
-            
-            const headerRow = [
-                "Brand", "Kode Tag", "SKU", "Name Tag", "Kategori", "Size", "Price", "Color", 
-                "Qty PO", "Online", "Offline"
-            ];
-            stores.forEach(s => headerRow.push(s.name));
-            headerRow.push("Total", "Stock", "Sisa");
-            
-            csvContent += headerRow.map(h => `"${h}"`).join(",") + "\r\n";
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 2000);
 
-            // CSV Body
+            let tableHtml = `
+                <html>
+                <head>
+                    <title>Live Spreadsheet View - Heymale</title>
+                    <style>
+                        body { margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; color: #1f2937; }
+                        .container { max-width: 100%; margin: auto; background: white; padding: 0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; }
+                        .header { background: #10b981; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+                        .header h1 { margin: 0; font-size: 20px; }
+                        .btn-copy { background: white; color: #10b981; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+                        .btn-copy:hover { background: #ecfdf5; transform: translateY(-1px); }
+                        .table-wrapper { overflow-x: auto; width: 100%; }
+                        table { border-collapse: collapse; width: 100%; font-size: 11px; }
+                        th { background: #f9fafb; color: #6b7280; font-weight: 700; text-transform: uppercase; border: 1px solid #e5e7eb; padding: 10px 8px; text-align: left; }
+                        td { border: 1px solid #e5e7eb; padding: 10px 8px; white-space: nowrap; }
+                        tr:nth-child(even) { background-color: #fcfcfc; }
+                        .num { text-align: center; font-weight: 600; }
+                        .badge { background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>Heymale Request Artikel - Spreadsheet Live</h1>
+                            <button class="btn-copy" onclick="copyToSheets()">Copy Data for Google Sheets</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table id="targetTable">
+                                <thead>
+                                    <tr>
+                                        <th>Brand</th><th>Kode Tag</th><th>SKU</th><th>Name Tag</th><th>Kategori</th><th>Size</th><th>Price</th><th>Color</th>
+                                        <th>Qty PO</th><th>Online</th><th>Offline</th>
+                                        ${stores.map(s => `<th>${s.name}</th>`).join('')}
+                                        <th>Total</th><th>Stock</th><th>Sisa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+            `;
+
             rows.forEach(tr => {
-                const rowData = [];
                 const inputs = tr.querySelectorAll('input, select');
                 const rowIdSuffix = tr.id.split('-')[1];
                 
-                // Info Dasar
+                tableHtml += `<tr>`;
+                // Data Produk (Brand s/d Qty PO)
                 for(let i=0; i<=8; i++) {
-                    rowData.push(`"${inputs[i].value}"`);
+                    tableHtml += `<td>${inputs[i].value}</td>`;
                 }
                 
                 // Online, Offline
-                rowData.push(`"${document.getElementById(`online-${rowIdSuffix}`).innerText}"`);
-                rowData.push(`"${document.getElementById(`offline-${rowIdSuffix}`).innerText}"`);
+                tableHtml += `<td class="num"><span class="badge">${document.getElementById(`online-${rowIdSuffix}`).innerText}</span></td>`;
+                tableHtml += `<td class="num">${document.getElementById(`offline-${rowIdSuffix}`).innerText}</td>`;
                 
-                // Toko
+                // Distribusi Toko
                 const storeIdxStart = 9;
                 for(let i=0; i<stores.length; i++) {
-                    rowData.push(`"${inputs[storeIdxStart + i].value}"`);
+                    tableHtml += `<td class="num">${inputs[storeIdxStart + i].value}</td>`;
                 }
                 
-                // Summary
-                rowData.push(`"${document.getElementById(`total-${rowIdSuffix}`).innerText}"`);
-                rowData.push(`"${document.getElementById(`stock-${rowIdSuffix}`).innerText}"`);
-                rowData.push(`"${document.getElementById(`sisa-${rowIdSuffix}`).innerText}"`);
-                
-                csvContent += rowData.join(",") + "\r\n";
+                // Summary Akhir
+                tableHtml += `<td class="num">${document.getElementById(`total-${rowIdSuffix}`).innerText}</td>`;
+                tableHtml += `<td class="num">${document.getElementById(`stock-${rowIdSuffix}`).innerText}</td>`;
+                tableHtml += `<td class="num">${document.getElementById(`sisa-${rowIdSuffix}`).innerText}</td>`;
+                tableHtml += `</tr>`;
             });
 
-            // Trigger Download
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            const timestamp = new Date().toISOString().slice(0, 10);
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `heymale_request_artikel_${timestamp}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            tableHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <script>
+                        function copyToSheets() {
+                            const table = document.getElementById('targetTable');
+                            const range = document.createRange();
+                            range.selectNode(table);
+                            window.getSelection().removeAllRanges();
+                            window.getSelection().addRange(range);
+                            document.execCommand('copy');
+                            alert('Data telah disalin! Silakan buka Google Sheets dan tekan Ctrl+V pada sel pertama.');
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
 
-            // Show Toast
-            const toast = document.getElementById('toast');
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            const blob = new Blob([tableHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
         }
 
         window.onload = () => { for(let i=0; i<5; i++) addRow(); };
