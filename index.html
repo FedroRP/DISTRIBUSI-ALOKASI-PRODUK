@@ -63,6 +63,13 @@
             box-shadow: inset 0 0 0 2px #3b82f6;
         }
 
+        /* Hide number input arrows */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
         td { 
             border-right: 1px solid #e2e8f0; 
             border-bottom: 1px solid #e2e8f0; 
@@ -71,9 +78,9 @@
         }
 
         /* Section Colors */
-        .col-product { background-color: #f0f9ff; } /* Biru muda */
-        .col-distribution { background-color: #fffbeb; } /* Kuning/Amber */
-        .col-stores { background-color: #ecfdf5; } /* Hijau/Emerald */
+        .col-product { background-color: #f0f9ff; }
+        .col-distribution { background-color: #fffbeb; }
+        .col-stores { background-color: #ecfdf5; }
         .col-results { background-color: #f8fafc; font-weight: 700; }
 
         .row-hover:hover { background-color: #f1f5f9; }
@@ -85,6 +92,21 @@
         }
         .btn-gradient:active { transform: scale(0.95); }
 
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: none;
+            z-index: 100;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         @media print { 
             .no-print { display: none; } 
             .table-container { max-height: none; overflow: visible; box-shadow: none; } 
@@ -93,6 +115,8 @@
     </style>
 </head>
 <body class="p-6">
+
+    <div id="toast" class="toast">Data berhasil disalin!</div>
 
     <!-- Header Section -->
     <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
@@ -109,9 +133,13 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Tambah Baris
             </button>
+            <button onclick="copyToGSheet()" class="flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-emerald-700 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                Copy untuk GSheet
+            </button>
             <button onclick="window.print()" class="flex items-center gap-2 btn-gradient text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                Export PDF
+                Cetak PDF
             </button>
         </div>
     </header>
@@ -127,7 +155,7 @@
                     <th class="bg-indigo-600 px-2 py-3 border-l border-indigo-500">53% ON</th>
                     <th class="bg-amber-500 px-2 py-3 border-l border-amber-400">47% OFF</th>
                     <!-- Per Store Header Percentages -->
-                    <th colspan="14" class="bg-emerald-600 px-4 py-3 border-l border-emerald-500">Store Distribution Ratios (Base: 100% of Offline)</th>
+                    <th colspan="14" class="bg-emerald-600 px-4 py-3 border-l border-emerald-500">Store Distribution (Manual Adjust Allowed)</th>
                     <th colspan="3" class="bg-slate-700 px-2 py-3 border-l border-slate-600">Verification</th>
                     <th class="bg-slate-900 no-print"></th>
                 </tr>
@@ -173,10 +201,10 @@
         </table>
     </div>
 
-    <!-- Empty State / Footer Info -->
+    <!-- Footer Info -->
     <div class="mt-6 flex flex-col md:flex-row justify-between items-center text-xs text-slate-400 font-medium">
-        <p>* Semua pembulatan menggunakan pembulatan terdekat, sisa dialokasikan ke store terakhir.</p>
-        <p class="no-print italic">Heymale Management System v2.0 - Premium Edition</p>
+        <p>* Klik pada angka toko untuk menyesuaikan alokasi secara manual.</p>
+        <p class="no-print italic">Heymale Management System v2.1 - Custom Adjust Edition</p>
     </div>
 
     <script>
@@ -186,7 +214,6 @@
             "PASKAL", "SEMARANG", "MUKU SBY", "MUKU BLOK M"
         ];
 
-        // Ratios as provided in user requirements
         const ratios = {
             SHIRT: [11.62, 10.95, 10.81, 10.17, 9.89, 9.75, 9.47, 9.33, 8.99, 8.99, 8.99, 8.99, 8.99, 8.99],
             PANTS: [11.93, 8.09, 11.18, 11.93, 10.83, 8.78, 10.64, 9.69, 11.18, 8.09, 8.09, 8.09, 8.09, 8.09],
@@ -202,7 +229,7 @@
 
             let storeCells = "";
             storeNames.forEach((name, index) => {
-                storeCells += `<td class="col-stores text-center font-semibold text-slate-700" id="store-${index}-${rowId}">0</td>`;
+                storeCells += `<td class="col-stores"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}')" class="text-center font-semibold text-slate-700" value="0"></td>`;
             });
 
             tr.innerHTML = `
@@ -221,8 +248,8 @@
                 <td class="col-product"><input type="number" placeholder="399000"></td>
                 <td class="col-product"><input type="text" placeholder="BLACK"></td>
                 <td class="bg-blue-50/50"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-lg" placeholder="0"></td>
-                <td class="col-distribution text-center text-indigo-700" id="online-${rowId}">0</td>
-                <td class="col-distribution text-center text-amber-700" id="offline-${rowId}">0</td>
+                <td class="col-distribution text-center text-indigo-700 font-bold" id="online-${rowId}">0</td>
+                <td class="col-distribution text-center text-amber-700 font-bold" id="offline-${rowId}">0</td>
                 ${storeCells}
                 <td class="col-results text-center" id="total-${rowId}">0</td>
                 <td class="col-results text-center text-green-600 bg-green-50" id="stock-${rowId}">0</td>
@@ -241,7 +268,6 @@
             const qtyPo = parseInt(qtyPoInput.value) || 0;
             const category = document.getElementById(`cat-${rowId}`).value;
             
-            // Online 53%, Offline 47%
             const qtyOnline = Math.round(qtyPo * 0.53);
             const qtyOffline = qtyPo - qtyOnline;
 
@@ -252,20 +278,33 @@
             let totalAllocated = 0;
 
             selectedRatios.forEach((ratio, index) => {
-                const cell = document.getElementById(`store-${index}-${rowId}`);
+                const input = document.getElementById(`store-${index}-${rowId}`);
                 let storeQty = Math.round(qtyOffline * (ratio / 100));
                 
-                // Adjust last store to match total offline exactly to prevent rounding errors
                 if (index === selectedRatios.length - 1) {
                     storeQty = qtyOffline - totalAllocated;
                     if (storeQty < 0) storeQty = 0;
                 }
                 
                 totalAllocated += storeQty;
-                cell.innerText = storeQty;
+                input.value = storeQty;
             });
 
-            // Summary Verification
+            updateTotals(rowId, qtyOffline);
+        }
+
+        function updateManual(rowId) {
+            const qtyOffline = parseInt(document.getElementById(`offline-${rowId}`).innerText) || 0;
+            updateTotals(rowId, qtyOffline);
+        }
+
+        function updateTotals(rowId, qtyOffline) {
+            let totalAllocated = 0;
+            storeNames.forEach((_, index) => {
+                const val = parseInt(document.getElementById(`store-${index}-${rowId}`).value) || 0;
+                totalAllocated += val;
+            });
+
             const totalCell = document.getElementById(`total-${rowId}`);
             const stockCell = document.getElementById(`stock-${rowId}`);
             const sisaCell = document.getElementById(`sisa-${rowId}`);
@@ -276,7 +315,6 @@
             const sisa = qtyOffline - totalAllocated;
             sisaCell.innerText = sisa;
             
-            // Highlight Sisa if not zero
             if (sisa !== 0) {
                 sisaCell.classList.add('bg-red-500', 'text-white');
                 sisaCell.classList.remove('bg-red-50', 'text-red-600');
@@ -287,19 +325,65 @@
         }
 
         function removeRow(rowId) {
-            const row = document.getElementById(`row-${rowId}`);
             if(confirm('Hapus baris ini?')) {
-                row.style.opacity = '0';
-                row.style.transform = 'translateX(20px)';
-                setTimeout(() => row.remove(), 200);
+                document.getElementById(`row-${rowId}`).remove();
             }
         }
 
-        // Initialize with 8 rows for a better look
+        function copyToGSheet() {
+            const table = document.getElementById('articleTable');
+            let copyText = "";
+            
+            // Header
+            const headers = Array.from(table.querySelectorAll('thead tr:nth-child(2) th'))
+                .filter(th => !th.classList.contains('no-print'))
+                .map(th => th.innerText.trim());
+            copyText += headers.join("\t") + "\n";
+
+            // Rows
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(tr => {
+                const rowData = [];
+                const inputs = tr.querySelectorAll('input, select');
+                const divs = tr.querySelectorAll('td.col-distribution, td.col-results');
+                
+                // Urutan data harus sesuai urutan kolom tabel
+                // 1. Brand, Tag, SKU, Name (Inputs)
+                for(let i=0; i<4; i++) rowData.push(inputs[i].value);
+                // 2. Category (Select)
+                rowData.push(inputs[4].value);
+                // 3. Size, Price, Color, Qty PO (Inputs)
+                for(let i=5; i<9; i++) rowData.push(inputs[i].value);
+                // 4. Online, Offline (Divs/Cells)
+                rowData.push(document.getElementById(`online-${tr.id.split('-')[1]}`).innerText);
+                rowData.push(document.getElementById(`offline-${tr.id.split('-')[1]}`).innerText);
+                // 5. Stores (Inputs)
+                const storeIdxStart = 9;
+                for(let i=0; i<storeNames.length; i++) rowData.push(inputs[storeIdxStart + i].value);
+                // 6. Total, Stock, Sisa (Cells)
+                const rowIdSuffix = tr.id.split('-')[1];
+                rowData.push(document.getElementById(`total-${rowIdSuffix}`).innerText);
+                rowData.push(document.getElementById(`stock-${rowIdSuffix}`).innerText);
+                rowData.push(document.getElementById(`sisa-${rowIdSuffix}`).innerText);
+
+                copyText += rowData.join("\t") + "\n";
+            });
+
+            const el = document.createElement('textarea');
+            el.value = copyText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
         window.onload = () => {
             for(let i=0; i<8; i++) addRow();
         };
     </script>
-
 </body>
 </html>
