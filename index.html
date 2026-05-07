@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v3</title>
+    <title>Heymale - Article Request System v3.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -100,9 +100,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
                 Tambah Baris
             </button>
-            <button onclick="exportToCSV()" class="btn-action flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Export GSheet (CSV)
+            <button onclick="openAsSpreadsheet()" class="btn-action flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                Buka di Tab Baru (Spreadsheet)
             </button>
         </div>
     </header>
@@ -134,7 +134,6 @@
                     <th class="px-4 py-3 bg-indigo-50 text-indigo-800">Online</th>
                     <th class="px-4 py-3 bg-amber-50 text-amber-800">Offline</th>
                     
-                    <!-- Store Names Labels -->
                     <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Padang</th>
                     <th class="px-3 py-3 bg-emerald-50 text-emerald-900">S.Penuh</th>
                     <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Makassar</th>
@@ -148,7 +147,6 @@
                     <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Paskal BDG</th>
                     <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Semarang</th>
                     
-                    <!-- Last Priority -->
                     <th class="px-3 py-3 bg-rose-50 text-rose-900">Muku Sby</th>
                     <th class="px-3 py-3 bg-rose-50 text-rose-900">Muku Blok M</th>
                     
@@ -162,39 +160,28 @@
         </table>
     </div>
 
-    <!-- Instructions / Footer -->
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 no-print">
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="text-sm font-extrabold text-slate-800 mb-2 uppercase tracking-wider">Prioritas Alokasi</h3>
-            <p class="text-xs text-slate-500 leading-relaxed">Sistem mendahulukan store dengan rasio tinggi. Store Muku dan store dengan rasio terendah akan dikosongkan jika Qty Offline tidak mencukupi.</p>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="text-sm font-extrabold text-slate-800 mb-2 uppercase tracking-wider">Cara Edit Manual</h3>
-            <p class="text-xs text-slate-500 leading-relaxed">Anda bisa mengubah angka di kolom store secara manual. Kolom <strong>Sisa</strong> akan berubah merah jika alokasi manual Anda melebihi atau kurang dari Qty Offline.</p>
-        </div>
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="text-sm font-extrabold text-slate-800 mb-2 uppercase tracking-wider">Export Format</h3>
-            <p class="text-xs text-slate-500 leading-relaxed">Gunakan tombol <strong>Export GSheet</strong> untuk mengunduh file CSV. Anda bisa langsung mengunggah file tersebut ke Google Drive.</p>
-        </div>
+    <!-- Footer -->
+    <div class="mt-6 flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+        <p>Heymale Distribution System v3.1</p>
+        <p>Priority Logic: Regular > Lowest Ratio > Muku</p>
     </div>
 
     <script>
-        // Definisi Store dengan Properti Prioritas
         const stores = [
-            { id: 'padang', name: "HEYMALE PADANG", ratioShirt: 11.62, ratioPants: 11.93, ratioJacket: 11.93, isMuku: false },
-            { id: 'sungai', name: "HEYMALE SUNGAI PENUH", ratioShirt: 10.95, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
-            { id: 'makassar', name: "HEYMALE MAKASSAR", ratioShirt: 10.81, ratioPants: 11.18, ratioJacket: 10.31, isMuku: false },
-            { id: 'pekanbaru', name: "HEYMALE PEKANBARU", ratioShirt: 10.17, ratioPants: 11.93, ratioJacket: 11.93, isMuku: false },
-            { id: 'bxc', name: "HEYMALE BXC", ratioShirt: 9.89, ratioPants: 10.83, ratioJacket: 10.83, isMuku: false },
-            { id: 'aceh', name: "HEYMALE ACEH", ratioShirt: 9.75, ratioPants: 8.78, ratioJacket: 8.78, isMuku: false },
-            { id: 'puri', name: "HEYMALE PURI", ratioShirt: 9.47, ratioPants: 10.64, ratioJacket: 10.64, isMuku: false },
-            { id: 'sunplaza', name: "HEYMALE SUN PLAZA MEDAN", ratioShirt: 9.33, ratioPants: 9.69, ratioJacket: 9.69, isMuku: false },
-            { id: 'pim', name: "HEYMALE PIM", ratioShirt: 8.99, ratioPants: 11.18, ratioJacket: 11.18, isMuku: false },
-            { id: 'palembang', name: "HEYMALE PALEMBANG", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
-            { id: 'paskal', name: "HEYMALE PASKAL BANDUNG", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
-            { id: 'semarang', name: "HEYMALE SEMARANG", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: false },
-            { id: 'mukusby', name: "HEYMALE MUKU SURABAYA", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: true },
-            { id: 'mukublokm', name: "HEYMALE MUKU BLOK M", ratioShirt: 8.99, ratioPants: 8.09, ratioJacket: 8.09, isMuku: true }
+            { name: "HEYMALE PADANG", rShirt: 11.62, rPants: 11.93, rJacket: 11.93, isMuku: false },
+            { name: "HEYMALE SUNGAI PENUH", rShirt: 10.95, rPants: 8.09, rJacket: 8.09, isMuku: false },
+            { name: "HEYMALE MAKASSAR", rShirt: 10.81, rPants: 11.18, rJacket: 10.31, isMuku: false },
+            { name: "HEYMALE PEKANBARU", rShirt: 10.17, rPants: 11.93, rJacket: 11.93, isMuku: false },
+            { name: "HEYMALE BXC", rShirt: 9.89, rPants: 10.83, rJacket: 10.83, isMuku: false },
+            { name: "HEYMALE ACEH", rShirt: 9.75, rPants: 8.78, rJacket: 8.78, isMuku: false },
+            { name: "HEYMALE PURI", rShirt: 9.47, rPants: 10.64, rJacket: 10.64, isMuku: false },
+            { name: "HEYMALE SUN PLAZA MEDAN", rShirt: 9.33, rPants: 9.69, rJacket: 9.69, isMuku: false },
+            { name: "HEYMALE PIM", rShirt: 8.99, rPants: 11.18, rJacket: 11.18, isMuku: false },
+            { name: "HEYMALE PALEMBANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
+            { name: "HEYMALE PASKAL BANDUNG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
+            { name: "HEYMALE SEMARANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
+            { name: "HEYMALE MUKU SURABAYA", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true },
+            { name: "HEYMALE MUKU BLOK M", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true }
         ];
 
         function addRow() {
@@ -213,7 +200,7 @@
             tr.innerHTML = `
                 <td class="sticky-left"><input type="text" value="HEYMALE" class="font-bold text-indigo-600"></td>
                 <td class="col-product"><input type="text" placeholder="KODE"></td>
-                <td class="col-product"><input type="text" placeholder="SKU-XXXX"></td>
+                <td class="col-product"><input type="text" placeholder="SKU"></td>
                 <td class="col-product"><input type="text" placeholder="NAMA ARTIKEL"></td>
                 <td class="col-product">
                     <select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold text-slate-700 uppercase">
@@ -251,25 +238,20 @@
             document.getElementById(`online-${rowId}`).innerText = qtyOnline;
             document.getElementById(`offline-${rowId}`).innerText = qtyOffline;
 
-            // Logic Pembagian Berdasarkan Prioritas
-            // 1. Ambil Rasio Sesuai Kategori
-            const ratioKey = category === 'SHIRT' ? 'ratioShirt' : (category === 'PANTS' ? 'ratioPants' : 'ratioJacket');
-            
-            // 2. Normalisasi Rasio ke 100%
+            const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
             const totalRatio = stores.reduce((sum, s) => sum + s[ratioKey], 0);
             
-            // 3. Buat Object Store yang Terurut Berdasarkan Prioritas
-            // Urutan: Regular (Rasio Besar -> Kecil) -> Muku Surabaya -> Muku Blok M
+            // Sort by priority: Regular stores first (higher ratios first), then Muku
             const sortedStores = stores.map((s, idx) => ({ ...s, originalIdx: idx }))
                 .sort((a, b) => {
-                    if (a.isMuku !== b.isMuku) return a.isMuku ? 1 : -1; // Muku di akhir
-                    return b[ratioKey] - a[ratioKey]; // Rasio besar di awal
+                    if (a.isMuku !== b.isMuku) return a.isMuku ? 1 : -1;
+                    return b[ratioKey] - a[ratioKey];
                 });
 
             let distributed = 0;
             const results = new Array(stores.length).fill(0);
 
-            // 4. Hitung Nilai Dasar (Floor)
+            // Floor distribution based on normalized ratios
             sortedStores.forEach(s => {
                 const normalizedRatio = s[ratioKey] / totalRatio;
                 let share = Math.floor(qtyOffline * normalizedRatio);
@@ -277,7 +259,7 @@
                 distributed += share;
             });
 
-            // 5. Bagi Sisa (Remainder) 1 per 1 Berdasarkan Urutan Prioritas
+            // Distribute remaining 1-by-1 to high priority stores
             let remainder = qtyOffline - distributed;
             let i = 0;
             while (remainder > 0 && i < sortedStores.length) {
@@ -287,7 +269,6 @@
                 i++;
             }
 
-            // 6. Masukkan ke Input Store
             results.forEach((val, idx) => {
                 document.getElementById(`store-${idx}-${rowId}`).value = val;
             });
@@ -327,57 +308,83 @@
             }
         }
 
-        function exportToCSV() {
+        function openAsSpreadsheet() {
             const table = document.getElementById('articleTable');
-            let csvRows = [];
-            
-            // Header Labels
-            const headers = Array.from(table.querySelectorAll('thead tr:nth-child(2) th'))
-                .filter(th => !th.classList.contains('no-print'))
-                .map(th => `"${th.innerText.trim()}"`);
-            csvRows.push(headers.join(","));
-
-            // Body Data
             const rows = table.querySelectorAll('tbody tr');
+            
+            let tableHtml = `
+                <html>
+                <head>
+                    <title>Spreadsheet Request Artikel</title>
+                    <style>
+                        table { border-collapse: collapse; font-family: sans-serif; width: 100%; font-size: 12px; }
+                        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                        th { background: #f4f4f4; font-weight: bold; }
+                        .num { text-align: center; }
+                        h1 { font-family: sans-serif; }
+                        .btn-copy { padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Heymale - Request Artikel Report</h1>
+                    <button class="btn-copy" onclick="copyTable()">Copy Table to Clipboard</button>
+                    <table id="exportTable">
+                        <thead>
+                            <tr>
+                                <th>Brand</th><th>Kode Tag</th><th>SKU</th><th>Name Tag</th><th>Kategori</th><th>Size</th><th>Price</th><th>Color</th>
+                                <th>Qty PO</th><th>Online</th><th>Offline</th>
+                                ${stores.map(s => `<th>${s.name}</th>`).join('')}
+                                <th>Total</th><th>Stock</th><th>Sisa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
             rows.forEach(tr => {
-                const rowData = [];
-                const rowIdSuffix = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
+                const rowIdSuffix = tr.id.split('-')[1];
                 
-                // Urutan kolom sesuai UI:
-                // Brand (0), Kode (1), SKU (2), Name (3), Category (4), Size (5), Price (6), Color (7), Qty PO (8)
-                for(let i=0; i<=8; i++) rowData.push(`"${inputs[i].value}"`);
+                tableHtml += `<tr>`;
+                // Basic Info
+                for(let i=0; i<=8; i++) tableHtml += `<td>${inputs[i].value}</td>`;
                 
                 // Online, Offline
-                rowData.push(`"${document.getElementById(`online-${rowIdSuffix}`).innerText}"`);
-                rowData.push(`"${document.getElementById(`offline-${rowIdSuffix}`).innerText}"`);
+                tableHtml += `<td class="num">${document.getElementById(`online-${rowIdSuffix}`).innerText}</td>`;
+                tableHtml += `<td class="num">${document.getElementById(`offline-${rowIdSuffix}`).innerText}</td>`;
                 
-                // Store 0 - 13 (Inputs)
+                // Stores
                 const storeIdxStart = 9;
                 for(let i=0; i<stores.length; i++) {
-                    rowData.push(`"${inputs[storeIdxStart + i].value}"`);
+                    tableHtml += `<td class="num">${inputs[storeIdxStart + i].value}</td>`;
                 }
                 
-                // Total, Stock, Sisa
-                rowData.push(`"${document.getElementById(`total-${rowIdSuffix}`).innerText}"`);
-                rowData.push(`"${document.getElementById(`stock-${rowIdSuffix}`).innerText}"`);
-                rowData.push(`"${document.getElementById(`sisa-${rowIdSuffix}`).innerText}"`);
-
-                csvRows.push(rowData.join(","));
+                // Totals
+                tableHtml += `<td class="num">${document.getElementById(`total-${rowIdSuffix}`).innerText}</td>`;
+                tableHtml += `<td class="num">${document.getElementById(`stock-${rowIdSuffix}`).innerText}</td>`;
+                tableHtml += `<td class="num">${document.getElementById(`sisa-${rowIdSuffix}`).innerText}</td>`;
+                tableHtml += `</tr>`;
             });
 
-            const csvString = csvRows.join("\n");
-            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
+            tableHtml += `
+                        </tbody>
+                    </table>
+                    <script>
+                        function copyTable() {
+                            const range = document.createRange();
+                            range.selectNode(document.getElementById('exportTable'));
+                            window.getSelection().removeAllRanges();
+                            window.getSelection().addRange(range);
+                            document.execCommand('copy');
+                            alert('Data disalin! Sekarang buka Google Sheets dan tekan Ctrl+V');
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([tableHtml], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
-            const timestamp = new Date().toISOString().slice(0, 10);
-            
-            link.setAttribute("href", url);
-            link.setAttribute("download", `heymale_request_artikel_${timestamp}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            window.open(url, '_blank');
         }
 
         window.onload = () => { for(let i=0; i<5; i++) addRow(); };
