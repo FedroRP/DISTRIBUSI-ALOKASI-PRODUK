@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v3.3</title>
+    <title>Heymale - Article Request System v4.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -15,7 +15,7 @@
         
         .table-container { 
             overflow-x: auto; 
-            max-height: 70vh; 
+            max-height: 65vh; 
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             border-radius: 16px;
             background: white;
@@ -62,7 +62,7 @@
         .col-product { background-color: #ffffff; }
         .col-distribution { background-color: #fefce8; }
         .col-stores { background-color: #f0fdf4; }
-        .col-priority-low { background-color: #fff1f2; } /* Muku Stores */
+        .col-priority-low { background-color: #fff1f2; }
         .col-results { background-color: #f8fafc; font-weight: 700; }
 
         .row-hover:hover { background-color: #f1f5f9; }
@@ -74,35 +74,23 @@
         .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .btn-action:active { transform: translateY(0); }
 
-        @media print { 
-            .no-print { display: none; } 
-            .table-container { max-height: none; overflow: visible; box-shadow: none; } 
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #10b981;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
         }
 
-        /* Toast Notification */
-        #toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1e293b;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: bold;
-            display: none;
-            z-index: 100;
-            animation: slideUp 0.3s ease-out;
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
 <body class="p-4 lg:p-8">
-
-    <div id="toast">Membuka Spreadsheet...</div>
 
     <!-- Header Section -->
     <header class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 no-print">
@@ -110,10 +98,14 @@
             <div class="bg-indigo-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-200">HM</div>
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Article Distribution</h1>
-                <p class="text-slate-500 text-sm font-semibold flex items-center gap-2">
-                    <span class="inline-block w-2 h-2 bg-green-500 rounded-full"></span> 
-                    Online 53% / Offline 47% (Priority Logic Active)
-                </p>
+                <div class="mt-1 flex items-center gap-3">
+                    <!-- URL Apps Script Terpasang Secara Otomatis -->
+                    <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwHHIVTKGb-vr9NjAkwsWonQhY-n0HhfsIy275-PfzoCPEk6e7J4hlA-COpTzDbI7oL/exec" class="w-64 border border-slate-300 bg-white px-3 py-1 rounded-lg text-[10px] font-medium focus:ring-2 focus:ring-indigo-500 text-slate-400" title="URL Apps Script Terpasang">
+                    <p class="text-slate-500 text-xs font-semibold flex items-center gap-2">
+                        <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> 
+                        GSheet Terkoneksi
+                    </p>
+                </div>
             </div>
         </div>
         
@@ -122,9 +114,13 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
                 Tambah Baris
             </button>
+            <button id="saveBtn" onclick="saveToGSheet()" class="btn-action flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                Simpan ke GSheet
+            </button>
             <button onclick="openSpreadsheetView()" class="btn-action flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Buka Spreadsheet (Live View)
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Preview
             </button>
         </div>
     </header>
@@ -180,12 +176,6 @@
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
-    </div>
-
-    <!-- Footer -->
-    <div class="mt-6 flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-        <p>Heymale Management System v3.3</p>
-        <p>Logika: Prioritas Toko Reguler > Prioritas Toko Muku</p>
     </div>
 
     <script>
@@ -253,16 +243,13 @@
         function calculateRow(rowId) {
             const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
             const category = document.getElementById(`cat-${rowId}`).value;
-            
             const qtyOnline = Math.round(qtyPo * 0.53);
             const qtyOffline = qtyPo - qtyOnline;
-
             document.getElementById(`online-${rowId}`).innerText = qtyOnline;
             document.getElementById(`offline-${rowId}`).innerText = qtyOffline;
 
             const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
             const totalRatio = stores.reduce((sum, s) => sum + s[ratioKey], 0);
-            
             const sortedStores = stores.map((s, idx) => ({ ...s, originalIdx: idx }))
                 .sort((a, b) => {
                     if (a.isMuku !== b.isMuku) return a.isMuku ? 1 : -1;
@@ -271,7 +258,6 @@
 
             let distributed = 0;
             const results = new Array(stores.length).fill(0);
-
             sortedStores.forEach(s => {
                 const normalizedRatio = s[ratioKey] / totalRatio;
                 let share = Math.floor(qtyOffline * normalizedRatio);
@@ -287,11 +273,9 @@
                 remainder--;
                 i++;
             }
-
             results.forEach((val, idx) => {
                 document.getElementById(`store-${idx}-${rowId}`).value = val;
             });
-
             updateTotals(rowId, qtyOffline);
         }
 
@@ -306,124 +290,98 @@
                 const val = parseInt(document.getElementById(`store-${index}-${rowId}`).value) || 0;
                 totalAllocated += val;
             });
-
             document.getElementById(`total-${rowId}`).innerText = totalAllocated;
             document.getElementById(`stock-${rowId}`).innerText = totalAllocated;
-            
             const sisa = qtyOffline - totalAllocated;
             const sisaCell = document.getElementById(`sisa-${rowId}`);
             sisaCell.innerText = sisa;
-            
-            if (sisa !== 0) {
-                sisaCell.className = "col-results text-center bg-red-600 text-white font-bold";
-            } else {
-                sisaCell.className = "col-results text-center bg-red-50 text-red-600";
-            }
+            sisaCell.className = sisa !== 0 ? "col-results text-center bg-red-600 text-white font-bold" : "col-results text-center bg-red-50 text-red-600";
         }
 
         function removeRow(rowId) {
-            if(confirm('Hapus baris artikel ini?')) {
-                document.getElementById(`row-${rowId}`).remove();
+            if(confirm('Hapus baris artikel ini?')) document.getElementById(`row-${rowId}`).remove();
+        }
+
+        async function saveToGSheet() {
+            const scriptUrl = document.getElementById('scriptUrl').value;
+            if (!scriptUrl) {
+                alert('URL Apps Script tidak ditemukan!');
+                return;
+            }
+
+            const rows = document.querySelectorAll('#tableBody tr');
+            const dataToSave = [];
+            
+            rows.forEach(tr => {
+                const rowIdSuffix = tr.id.split('-')[1];
+                const inputs = tr.querySelectorAll('input, select');
+                const rowData = {
+                    brand: inputs[0].value,
+                    kode_tag: inputs[1].value,
+                    sku: inputs[2].value,
+                    name_tag: inputs[3].value,
+                    kategori: inputs[4].value,
+                    size: inputs[5].value,
+                    price: inputs[6].value,
+                    color: inputs[7].value,
+                    qty_po: inputs[8].value,
+                    online: document.getElementById(`online-${rowIdSuffix}`).innerText,
+                    offline: document.getElementById(`offline-${rowIdSuffix}`).innerText,
+                    total: document.getElementById(`total-${rowIdSuffix}`).innerText,
+                    sisa: document.getElementById(`sisa-${rowIdSuffix}`).innerText,
+                    timestamp: new Date().toLocaleString()
+                };
+                
+                stores.forEach((s, idx) => {
+                    rowData[s.name.replace(/\s+/g, '_').toLowerCase()] = document.getElementById(`store-${idx}-${rowIdSuffix}`).value;
+                });
+                
+                dataToSave.push(rowData);
+            });
+
+            if (dataToSave.length === 0) return;
+
+            const saveBtn = document.getElementById('saveBtn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<span class="loader"></span> Menyimpan...`;
+
+            try {
+                // Mengirim data ke Google Apps Script
+                await fetch(scriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave)
+                });
+                
+                alert('Data berhasil dikirim ke Google Sheets!');
+            } catch (error) {
+                console.error(error);
+                alert('Gagal menyimpan data ke GSheet.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
             }
         }
 
         function openSpreadsheetView() {
             const table = document.getElementById('articleTable');
             const rows = table.querySelectorAll('tbody tr');
-            
-            const toast = document.getElementById('toast');
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 2000);
-
-            let tableHtml = `
-                <html>
-                <head>
-                    <title>Live Spreadsheet View - Heymale</title>
-                    <style>
-                        body { margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; color: #1f2937; }
-                        .container { max-width: 100%; margin: auto; background: white; padding: 0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); overflow: hidden; }
-                        .header { background: #10b981; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-                        .header h1 { margin: 0; font-size: 20px; }
-                        .btn-copy { background: white; color: #10b981; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-                        .btn-copy:hover { background: #ecfdf5; transform: translateY(-1px); }
-                        .table-wrapper { overflow-x: auto; width: 100%; }
-                        table { border-collapse: collapse; width: 100%; font-size: 11px; }
-                        th { background: #f9fafb; color: #6b7280; font-weight: 700; text-transform: uppercase; border: 1px solid #e5e7eb; padding: 10px 8px; text-align: left; }
-                        td { border: 1px solid #e5e7eb; padding: 10px 8px; white-space: nowrap; }
-                        tr:nth-child(even) { background-color: #fcfcfc; }
-                        .num { text-align: center; font-weight: 600; }
-                        .badge { background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="header">
-                            <h1>Heymale Request Artikel - Spreadsheet Live</h1>
-                            <button class="btn-copy" onclick="copyToSheets()">Copy Data for Google Sheets</button>
-                        </div>
-                        <div class="table-wrapper">
-                            <table id="targetTable">
-                                <thead>
-                                    <tr>
-                                        <th>Brand</th><th>Kode Tag</th><th>SKU</th><th>Name Tag</th><th>Kategori</th><th>Size</th><th>Price</th><th>Color</th>
-                                        <th>Qty PO</th><th>Online</th><th>Offline</th>
-                                        ${stores.map(s => `<th>${s.name}</th>`).join('')}
-                                        <th>Total</th><th>Stock</th><th>Sisa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-            `;
-
+            let tableHtml = `<html><head><title>Live Spreadsheet View</title><style>body { margin: 0; padding: 0; font-family: sans-serif; } table { border-collapse: collapse; width: 100%; font-size: 12px; } th { background: #f8f9fa; border: 1px solid #e0e0e0; padding: 10px; } td { border: 1px solid #e0e0e0; padding: 8px; }</style></head><body onload="window.print()"><table><thead><tr><th>Brand</th><th>Kode Tag</th><th>SKU</th><th>Name Tag</th><th>Kategori</th><th>Size</th><th>Price</th><th>Color</th><th>PO</th><th>ON</th><th>OFF</th>${stores.map(s => `<th>${s.name}</th>`).join('')}<th>Total</th><th>Stock</th><th>Sisa</th></tr></thead><tbody>`;
             rows.forEach(tr => {
                 const inputs = tr.querySelectorAll('input, select');
                 const rowIdSuffix = tr.id.split('-')[1];
-                
                 tableHtml += `<tr>`;
-                // Data Produk (Brand s/d Qty PO)
-                for(let i=0; i<=8; i++) {
-                    tableHtml += `<td>${inputs[i].value}</td>`;
-                }
-                
-                // Online, Offline
-                tableHtml += `<td class="num"><span class="badge">${document.getElementById(`online-${rowIdSuffix}`).innerText}</span></td>`;
-                tableHtml += `<td class="num">${document.getElementById(`offline-${rowIdSuffix}`).innerText}</td>`;
-                
-                // Distribusi Toko
-                const storeIdxStart = 9;
-                for(let i=0; i<stores.length; i++) {
-                    tableHtml += `<td class="num">${inputs[storeIdxStart + i].value}</td>`;
-                }
-                
-                // Summary Akhir
-                tableHtml += `<td class="num">${document.getElementById(`total-${rowIdSuffix}`).innerText}</td>`;
-                tableHtml += `<td class="num">${document.getElementById(`stock-${rowIdSuffix}`).innerText}</td>`;
-                tableHtml += `<td class="num">${document.getElementById(`sisa-${rowIdSuffix}`).innerText}</td>`;
-                tableHtml += `</tr>`;
+                for(let i=0; i<=8; i++) tableHtml += `<td>${inputs[i].value}</td>`;
+                tableHtml += `<td>${document.getElementById(`online-${rowIdSuffix}`).innerText}</td><td>${document.getElementById(`offline-${rowIdSuffix}`).innerText}</td>`;
+                for(let i=0; i<stores.length; i++) tableHtml += `<td>${document.getElementById(`store-${i}-${rowIdSuffix}`).value}</td>`;
+                tableHtml += `<td>${document.getElementById(`total-${rowIdSuffix}`).innerText}</td><td>${document.getElementById(`stock-${rowIdSuffix}`).innerText}</td><td>${document.getElementById(`sisa-${rowIdSuffix}`).innerText}</td></tr>`;
             });
-
-            tableHtml += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <script>
-                        function copyToSheets() {
-                            const table = document.getElementById('targetTable');
-                            const range = document.createRange();
-                            range.selectNode(table);
-                            window.getSelection().removeAllRanges();
-                            window.getSelection().addRange(range);
-                            document.execCommand('copy');
-                            alert('Data telah disalin! Silakan buka Google Sheets dan tekan Ctrl+V pada sel pertama.');
-                        }
-                    <\/script>
-                </body>
-                </html>
-            `;
-
+            tableHtml += `</tbody></table></body></html>`;
             const blob = new Blob([tableHtml], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
+            window.open(URL.createObjectURL(blob), '_blank');
         }
 
         window.onload = () => { for(let i=0; i<5; i++) addRow(); };
