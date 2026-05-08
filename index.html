@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v5.1</title>
+    <title>Heymale - Article Request System v5.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -109,7 +109,7 @@
                 Tambah Baris
             </button>
             <button id="saveBtn" onclick="saveToGSheet()" class="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700">
-                Simpan GSheet
+                Simpan ke GSheet
             </button>
             <button onclick="openSpreadsheetView()" class="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
                 Preview Report
@@ -119,8 +119,8 @@
 
     <!-- Tab Navigation -->
     <nav class="flex gap-8 mb-4 border-b border-slate-200 no-print">
-        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Dashboard Offline (Regular)</button>
-        <button onclick="switchView('online')" id="tab-online" class="btn-tab pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Request Online (Muku)</button>
+        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Dashboard Offline (PARUNG)</button>
+        <button onclick="switchView('online')" id="tab-online" class="btn-tab pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Request Online (MALATEK)</button>
     </nav>
 
     <!-- Main Table Container -->
@@ -133,7 +133,6 @@
                     <th class="bg-indigo-700 px-2 py-4">ON (53%)</th>
                     <th class="bg-amber-600 px-2 py-4">OFF (47%)</th>
                     
-                    <!-- Store Headers (All 14 Stores Always Visible) -->
                     <th colspan="14" id="main-store-header" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest">Alokasi Distribusi Store</th>
                     
                     <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th>
@@ -152,7 +151,6 @@
                     <th class="px-4 py-3 bg-indigo-50 text-indigo-800">Online</th>
                     <th class="px-4 py-3 bg-amber-50 text-amber-800">Offline</th>
                     
-                    <!-- All Store Column Headers -->
                     <th class="px-3 py-3 bg-slate-50 text-slate-600 border-l border-slate-200">Padang</th>
                     <th class="px-3 py-3 bg-slate-50 text-slate-600">S.Penuh</th>
                     <th class="px-3 py-3 bg-slate-50 text-slate-600">Makassar</th>
@@ -197,7 +195,7 @@
         ];
 
         let currentView = 'offline';
-        let rowDataStorage = {}; // Storing offline and online arrays per row
+        let rowDataStorage = {}; 
 
         function switchView(view) {
             currentView = view;
@@ -208,16 +206,15 @@
             if (view === 'offline') {
                 tabOffline.classList.add('active');
                 tabOnline.classList.remove('active');
-                mainHeader.innerText = "DASHBOARD OFFLINE (REGULAR)";
+                mainHeader.innerText = "DASHBOARD OFFLINE (PARUNG)";
                 mainHeader.className = "bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest";
             } else {
                 tabOffline.classList.remove('active');
                 tabOnline.classList.add('active');
-                mainHeader.innerText = "REQUEST ONLINE (MUKU)";
+                mainHeader.innerText = "REQUEST ONLINE (MALATEK)";
                 mainHeader.className = "bg-blue-700 px-4 py-4 border-l border-blue-800 tracking-widest";
             }
 
-            // Update all visible rows
             Object.keys(rowDataStorage).forEach(rowId => refreshRowUI(rowId));
         }
 
@@ -280,7 +277,6 @@
             const regularStores = stores.filter(s => !s.isMuku);
             const regRatioSum = regularStores.reduce((sum, s) => sum + s[ratioKey], 0);
             
-            // 1. OFFLINE DISTRIBUTION (12 Stores)
             let offResults = new Array(14).fill(0);
             let distributedOffline = 0;
             regularStores.forEach(s => {
@@ -299,14 +295,12 @@
                 j++;
             }
 
-            // 2. ONLINE REQUEST (2 Muku Stores, others 0)
             let onResults = new Array(14).fill(0);
             stores.forEach((s, idx) => {
                 if (s.isMuku) {
-                    // Ideal share from offline pool ratio
                     onResults[idx] = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum));
                 } else {
-                    onResults[idx] = 0; // Regular stores are 0 in online request tab
+                    onResults[idx] = 0; 
                 }
             });
 
@@ -328,7 +322,6 @@
             currentData.forEach((val, idx) => {
                 const input = document.getElementById(`store-${idx}-${rowId}`);
                 input.value = val;
-                // Add styling for zeros in online view for non-muku
                 if (currentView === 'online' && !stores[idx].isMuku) {
                     input.classList.add('text-slate-300');
                 } else {
@@ -373,35 +366,64 @@
         async function saveToGSheet() {
             const scriptUrl = document.getElementById('scriptUrl').value;
             if (!scriptUrl) { alert('URL Apps Script tidak ditemukan!'); return; }
+            
+            const targetSheet = currentView === 'offline' ? 'PARUNG' : 'MALATEK';
             const rows = document.querySelectorAll('#tableBody tr');
             const dataToSave = [];
+            
             rows.forEach(tr => {
                 const rowId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
                 const rowData = {
-                    sku: inputs[2].value, name: inputs[3].value, size: inputs[5].value, qty_po: inputs[8].value,
+                    brand: inputs[0].value,
+                    kode_tag: inputs[1].value,
+                    sku: inputs[2].value, 
+                    name: inputs[3].value, 
+                    kategori: inputs[4].value,
+                    size: inputs[5].value, 
+                    price: inputs[6].value,
+                    color: inputs[7].value,
+                    qty_po: inputs[8].value,
                     online: document.getElementById(`online-${rowId}`).innerText,
                     offline: document.getElementById(`offline-${rowId}`).innerText,
-                    view_context: currentView, timestamp: new Date().toLocaleString()
+                    target_sheet: targetSheet, // Memberitahu Apps Script sheet mana yang dituju
+                    timestamp: new Date().toLocaleString()
                 };
                 stores.forEach((s, idx) => {
                     rowData[s.name.replace(/\s+/g, '_').toLowerCase()] = (currentView === 'offline' ? rowDataStorage[rowId].off[idx] : rowDataStorage[rowId].on[idx]);
                 });
                 dataToSave.push(rowData);
             });
+
+            if (dataToSave.length === 0) return;
+
             const saveBtn = document.getElementById('saveBtn');
             saveBtn.disabled = true;
-            saveBtn.innerHTML = `<span class="loader"></span> Saving...`;
+            const originalText = saveBtn.innerText;
+            saveBtn.innerHTML = `<span class="loader"></span> Menyimpan...`;
+
             try {
-                await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dataToSave) });
-                alert('Data berhasil dikirim ke Google Sheets!');
-            } catch (error) { alert('Gagal menyimpan data.'); }
-            finally { saveBtn.disabled = false; saveBtn.innerHTML = `Simpan GSheet`; }
+                await fetch(scriptUrl, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sheetName: targetSheet,
+                        data: dataToSave
+                    }) 
+                });
+                alert(`Data berhasil dikirim ke sheet ${targetSheet}!`);
+            } catch (error) { 
+                alert('Gagal menyimpan data.'); 
+            } finally { 
+                saveBtn.disabled = false; 
+                saveBtn.innerText = originalText; 
+            }
         }
 
         function openSpreadsheetView() {
             const rows = document.querySelectorAll('#tableBody tr');
-            let tableHtml = `<html><head><title>Report</title><style>table { border-collapse: collapse; width: 100%; font-size: 10px; } th, td { border: 1px solid #ddd; padding: 4px; }</style></head><body><h3>Heymale Report (${currentView.toUpperCase()})</h3><table><thead><tr><th>SKU</th><th>Name</th><th>Size</th><th>PO</th><th>ON</th><th>OFF</th>${stores.map(s=>`<th>${s.name}</th>`).join('')}</tr></thead><tbody>`;
+            let tableHtml = `<html><head><title>Report</title><style>table { border-collapse: collapse; width: 100%; font-size: 10px; } th, td { border: 1px solid #ddd; padding: 4px; }</style></head><body><h3>Heymale Report (${currentView === 'offline' ? 'PARUNG' : 'MALATEK'})</h3><table><thead><tr><th>SKU</th><th>Name</th><th>Size</th><th>PO</th><th>ON</th><th>OFF</th>${stores.map(s=>`<th>${s.name}</th>`).join('')}</tr></thead><tbody>`;
             rows.forEach(tr => {
                 const rId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
