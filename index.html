@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v4.1</title>
+    <title>Heymale - Article Request System v4.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -99,11 +99,10 @@
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Article Distribution</h1>
                 <div class="mt-1 flex items-center gap-3">
-                    <!-- URL Apps Script Terpasang Secara Otomatis -->
                     <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwHHIVTKGb-vr9NjAkwsWonQhY-n0HhfsIy275-PfzoCPEk6e7J4hlA-COpTzDbI7oL/exec" class="w-64 border border-slate-300 bg-white px-3 py-1 rounded-lg text-[10px] font-medium focus:ring-2 focus:ring-indigo-500 text-slate-400" title="URL Apps Script Terpasang">
                     <p class="text-slate-500 text-xs font-semibold flex items-center gap-2">
                         <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> 
-                        GSheet Terkoneksi
+                        GSheet Terkoneksi (Logic: Muku Priority Shift)
                     </p>
                 </div>
             </div>
@@ -135,7 +134,7 @@
                     <th class="bg-indigo-700 px-2 py-4">ON (53%)</th>
                     <th class="bg-amber-600 px-2 py-4">OFF (47%)</th>
                     <th colspan="12" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800">Distribusi Store Regular</th>
-                    <th colspan="2" class="bg-rose-700 px-4 py-4 border-l border-rose-800">Last Priority</th>
+                    <th colspan="2" class="bg-rose-700 px-4 py-4 border-l border-rose-800">Muku (Hybrid)</th>
                     <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th>
                     <th class="bg-slate-950 no-print"></th>
                 </tr>
@@ -243,40 +242,81 @@
         function calculateRow(rowId) {
             const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
             const category = document.getElementById(`cat-${rowId}`).value;
-            const qtyOnline = Math.round(qtyPo * 0.53);
-            const qtyOffline = qtyPo - qtyOnline;
-            document.getElementById(`online-${rowId}`).innerText = qtyOnline;
-            document.getElementById(`offline-${rowId}`).innerText = qtyOffline;
-
+            
+            // Rasio Dasar
             const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
-            const totalRatio = stores.reduce((sum, s) => sum + s[ratioKey], 0);
-            const sortedStores = stores.map((s, idx) => ({ ...s, originalIdx: idx }))
-                .sort((a, b) => {
-                    if (a.isMuku !== b.isMuku) return a.isMuku ? 1 : -1;
-                    return b[ratioKey] - a[ratioKey];
-                });
+            
+            // 1. Tentukan Intended Pool
+            const baseOfflinePool = Math.round(qtyPo * 0.47);
+            const baseOnlinePool = qtyPo - baseOfflinePool;
 
-            let distributed = 0;
+            // 2. Filter Store (Regular vs Muku)
+            const regularStores = stores.filter(s => !s.isMuku);
+            const mukuStores = stores.filter(s => s.isMuku);
+
+            // 3. Hitung Kebutuhan Toko Reguler dari Offline Pool
+            const regRatioSum = regularStores.reduce((sum, s) => sum + s[ratioKey], 0);
+            const mukuRatioSum = mukuStores.reduce((sum, s) => sum + s[ratioKey], 0);
+            const totalRatioSum = regRatioSum + mukuRatioSum;
+
+            let distributedRegular = 0;
             const results = new Array(stores.length).fill(0);
-            sortedStores.forEach(s => {
-                const normalizedRatio = s[ratioKey] / totalRatio;
-                let share = Math.floor(qtyOffline * normalizedRatio);
-                results[s.originalIdx] = share;
-                distributed += share;
+
+            // Distribusikan stok offline ke 12 toko reguler
+            regularStores.forEach(s => {
+                const sIdx = stores.findIndex(st => st.name === s.name);
+                const share = Math.floor(baseOfflinePool * (s[ratioKey] / regRatioSum));
+                results[sIdx] = share;
+                distributedRegular += share;
             });
 
-            let remainder = qtyOffline - distributed;
-            let i = 0;
-            while (remainder > 0 && i < sortedStores.length) {
-                const targetIdx = sortedStores[i].originalIdx;
-                results[targetIdx] += 1;
-                remainder--;
-                i++;
+            // Sisa dari offline pool (akibat pembulatan ke bawah)
+            let remainderOffline = baseOfflinePool - distributedRegular;
+            let j = 0;
+            while(remainderOffline > 0) {
+                const regIdx = stores.findIndex(st => st.name === regularStores[j % regularStores.length].name);
+                results[regIdx]++;
+                remainderOffline--;
+                j++;
             }
+
+            // 4. Logika Hybrid MUKU
+            // Melimpah jika Qty PO > 200 (Contoh threshold melimpah)
+            const isAbundant = qtyPo > 200;
+            let mukuTotal = 0;
+
+            mukuStores.forEach(s => {
+                const sIdx = stores.findIndex(st => st.name === s.name);
+                // Muku mendapatkan porsi sesuai rasio mereka relatif terhadap total
+                const share = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum)); 
+                results[sIdx] = share;
+                mukuTotal += share;
+            });
+
+            // 5. Adjust Online/Offline Display berdasarkan sumber stok Muku
+            let finalOfflineDisplay, finalOnlineDisplay;
+
+            if (isAbundant) {
+                // Melimpah: Muku "makan" dari stok offline (stok reguler mengecil sedikit secara proporsional)
+                // Kita biarkan distribusi awal tetap, tapi secara logis mereka satu pool
+                finalOfflineDisplay = baseOfflinePool;
+                finalOnlineDisplay = baseOnlinePool;
+            } else {
+                // Sedikit: Offline pool murni untuk reguler, Muku ambil dari jatah Online
+                finalOfflineDisplay = baseOfflinePool + mukuTotal;
+                finalOnlineDisplay = baseOnlinePool - mukuTotal;
+            }
+
+            // Update UI Toko
             results.forEach((val, idx) => {
                 document.getElementById(`store-${idx}-${rowId}`).value = val;
             });
-            updateTotals(rowId, qtyOffline);
+
+            // Update UI Summary
+            document.getElementById(`online-${rowId}`).innerText = finalOnlineDisplay;
+            document.getElementById(`offline-${rowId}`).innerText = finalOfflineDisplay;
+
+            updateTotals(rowId, finalOfflineDisplay);
         }
 
         function updateManual(rowId) {
@@ -347,7 +387,6 @@
             saveBtn.innerHTML = `<span class="loader"></span> Menyimpan...`;
 
             try {
-                // Mengirim data ke Google Apps Script
                 await fetch(scriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
