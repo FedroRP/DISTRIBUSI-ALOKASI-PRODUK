@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v4.2</title>
+    <title>Heymale - Article Request System v5.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -15,7 +15,7 @@
         
         .table-container { 
             overflow-x: auto; 
-            max-height: 65vh; 
+            max-height: 60vh; 
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             border-radius: 16px;
             background: white;
@@ -53,7 +53,6 @@
         }
         
         input:focus { outline: none; background-color: #f8fafc; box-shadow: inset 0 0 0 2px #3b82f6; }
-
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
@@ -61,18 +60,18 @@
 
         .col-product { background-color: #ffffff; }
         .col-distribution { background-color: #fefce8; }
-        .col-stores { background-color: #f0fdf4; }
-        .col-priority-low { background-color: #fff1f2; }
+        .col-stores-off { background-color: #f0fdf4; }
+        .col-stores-on { background-color: #eff6ff; }
         .col-results { background-color: #f8fafc; font-weight: 700; }
 
-        .row-hover:hover { background-color: #f1f5f9; }
-        .row-hover:hover .sticky-left { background-color: #f1f5f9; }
-
-        .btn-action {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        .btn-tab {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 3px solid transparent;
         }
-        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .btn-action:active { transform: translateY(0); }
+        .btn-tab.active {
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+        }
 
         .loader {
             border: 3px solid #f3f3f3;
@@ -86,55 +85,57 @@
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        @media print { .no-print { display: none; } }
     </style>
 </head>
 <body class="p-4 lg:p-8">
 
     <!-- Header Section -->
-    <header class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 no-print">
+    <header class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 no-print">
         <div class="flex items-center gap-5">
             <div class="bg-indigo-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-200">HM</div>
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Article Distribution</h1>
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Article Request</h1>
                 <div class="mt-1 flex items-center gap-3">
-                    <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwHHIVTKGb-vr9NjAkwsWonQhY-n0HhfsIy275-PfzoCPEk6e7J4hlA-COpTzDbI7oL/exec" class="w-64 border border-slate-300 bg-white px-3 py-1 rounded-lg text-[10px] font-medium focus:ring-2 focus:ring-indigo-500 text-slate-400" title="URL Apps Script Terpasang">
-                    <p class="text-slate-500 text-xs font-semibold flex items-center gap-2">
-                        <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> 
-                        GSheet Terkoneksi (Logic: Muku Priority Shift)
+                    <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwHHIVTKGb-vr9NjAkwsWonQhY-n0HhfsIy275-PfzoCPEk6e7J4hlA-COpTzDbI7oL/exec" class="w-64 border border-slate-300 bg-white px-3 py-1 rounded-lg text-[10px] font-medium focus:ring-2 focus:ring-indigo-500 text-slate-400">
+                    <p class="text-slate-500 text-xs font-semibold">
+                        Ratio: Online 53% | Offline 47%
                     </p>
                 </div>
             </div>
         </div>
         
         <div class="flex flex-wrap gap-3">
-            <button onclick="addRow()" class="btn-action flex items-center gap-2 bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold shadow-sm hover:border-indigo-600 hover:text-indigo-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
+            <button onclick="addRow()" class="flex items-center gap-2 bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold hover:border-indigo-600 hover:text-indigo-600">
                 Tambah Baris
             </button>
-            <button id="saveBtn" onclick="saveToGSheet()" class="btn-action flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                Simpan ke GSheet
+            <button id="saveBtn" onclick="saveToGSheet()" class="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700">
+                Simpan GSheet
             </button>
-            <button onclick="openSpreadsheetView()" class="btn-action flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                Preview
+            <button onclick="openSpreadsheetView()" class="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700">
+                Preview Report
             </button>
         </div>
     </header>
 
-    <!-- Main Table Table -->
+    <!-- Tab Navigation -->
+    <nav class="flex gap-8 mb-4 border-b border-slate-200 no-print">
+        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Dashboard Offline (Regular)</button>
+        <button onclick="switchView('online')" id="tab-online" class="btn-tab pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Request Online (Muku)</button>
+    </nav>
+
+    <!-- Main Table Container -->
     <div class="table-container border border-slate-200">
         <table id="articleTable">
             <thead>
                 <tr class="bg-slate-900 text-white uppercase text-[9px] tracking-widest">
-                    <th colspan="8" class="px-4 py-4 sticky-left bg-slate-950">Informasi Artikel</th>
+                    <th colspan="8" class="px-4 py-4 sticky-left bg-slate-950">Info Artikel</th>
                     <th class="bg-blue-600 px-2 py-4">PO</th>
                     <th class="bg-indigo-700 px-2 py-4">ON (53%)</th>
                     <th class="bg-amber-600 px-2 py-4">OFF (47%)</th>
-                    <th colspan="12" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800">Distribusi Store Regular</th>
-                    <th colspan="2" class="bg-rose-700 px-4 py-4 border-l border-rose-800">Muku (Hybrid)</th>
+                    
+                    <!-- Store Headers (All 14 Stores Always Visible) -->
+                    <th colspan="14" id="main-store-header" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest">Alokasi Distribusi Store</th>
+                    
                     <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th>
                     <th class="bg-slate-950 no-print"></th>
                 </tr>
@@ -151,23 +152,23 @@
                     <th class="px-4 py-3 bg-indigo-50 text-indigo-800">Online</th>
                     <th class="px-4 py-3 bg-amber-50 text-amber-800">Offline</th>
                     
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Padang</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">S.Penuh</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Makassar</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Pekanbaru</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">BXC</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Aceh</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Puri</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Sun Plaza</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">PIM</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Palembang</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Paskal BDG</th>
-                    <th class="px-3 py-3 bg-emerald-50 text-emerald-900">Semarang</th>
+                    <!-- All Store Column Headers -->
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600 border-l border-slate-200">Padang</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">S.Penuh</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Makassar</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Pekanbaru</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">BXC</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Aceh</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Puri</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Sun Plaza</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">PIM</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Palembang</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Paskal BDG</th>
+                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Semarang</th>
+                    <th class="px-3 py-3 bg-slate-100 text-indigo-600">Muku Sby</th>
+                    <th class="px-3 py-3 bg-slate-100 text-indigo-600">Muku Blok M</th>
                     
-                    <th class="px-3 py-3 bg-rose-50 text-rose-900">Muku Sby</th>
-                    <th class="px-3 py-3 bg-rose-50 text-rose-900">Muku Blok M</th>
-                    
-                    <th class="px-4 py-3 bg-slate-100 text-slate-800">Total</th>
+                    <th class="px-4 py-3 bg-slate-100 text-slate-800 border-l border-slate-200">Total</th>
                     <th class="px-4 py-3 bg-green-100 text-green-800">Stock</th>
                     <th class="px-4 py-3 bg-red-100 text-red-800">Sisa</th>
                     <th class="no-print"></th>
@@ -195,6 +196,31 @@
             { name: "HEYMALE MUKU BLOK M", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true }
         ];
 
+        let currentView = 'offline';
+        let rowDataStorage = {}; // Storing offline and online arrays per row
+
+        function switchView(view) {
+            currentView = view;
+            const tabOffline = document.getElementById('tab-offline');
+            const tabOnline = document.getElementById('tab-online');
+            const mainHeader = document.getElementById('main-store-header');
+
+            if (view === 'offline') {
+                tabOffline.classList.add('active');
+                tabOnline.classList.remove('active');
+                mainHeader.innerText = "DASHBOARD OFFLINE (REGULAR)";
+                mainHeader.className = "bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest";
+            } else {
+                tabOffline.classList.remove('active');
+                tabOnline.classList.add('active');
+                mainHeader.innerText = "REQUEST ONLINE (MUKU)";
+                mainHeader.className = "bg-blue-700 px-4 py-4 border-l border-blue-800 tracking-widest";
+            }
+
+            // Update all visible rows
+            Object.keys(rowDataStorage).forEach(rowId => refreshRowUI(rowId));
+        }
+
         function addRow() {
             const tbody = document.getElementById('tableBody');
             const rowId = Math.random().toString(36).substr(2, 9);
@@ -202,10 +228,14 @@
             tr.id = `row-${rowId}`;
             tr.className = "row-hover transition-colors";
 
+            rowDataStorage[rowId] = {
+                off: new Array(14).fill(0),
+                on: new Array(14).fill(0)
+            };
+
             let storeCells = "";
             stores.forEach((store, index) => {
-                const cellClass = store.isMuku ? "col-priority-low" : "col-stores";
-                storeCells += `<td class="${cellClass}"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}')" class="text-center font-bold text-slate-800" value="0"></td>`;
+                storeCells += `<td class="store-cell"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}', ${index})" class="text-center font-bold text-slate-800" value="0"></td>`;
             });
 
             tr.innerHTML = `
@@ -231,9 +261,7 @@
                 <td class="col-results text-center text-green-600 bg-green-50" id="stock-${rowId}">0</td>
                 <td class="col-results text-center text-red-600 bg-red-50" id="sisa-${rowId}">0</td>
                 <td class="no-print text-center px-2">
-                    <button onclick="removeRow('${rowId}')" class="p-2 text-slate-300 hover:text-red-500 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                    </button>
+                    <button onclick="removeRow('${rowId}')" class="p-2 text-slate-300 hover:text-red-500 transition-colors">×</button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -242,185 +270,148 @@
         function calculateRow(rowId) {
             const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
             const category = document.getElementById(`cat-${rowId}`).value;
-            
-            // Rasio Dasar
             const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
             
-            // 1. Tentukan Intended Pool
-            const baseOfflinePool = Math.round(qtyPo * 0.47);
-            const baseOnlinePool = qtyPo - baseOfflinePool;
+            const qtyOnline = Math.round(qtyPo * 0.53);
+            const qtyOffline = qtyPo - qtyOnline;
+            document.getElementById(`online-${rowId}`).innerText = qtyOnline;
+            document.getElementById(`offline-${rowId}`).innerText = qtyOffline;
 
-            // 2. Filter Store (Regular vs Muku)
             const regularStores = stores.filter(s => !s.isMuku);
-            const mukuStores = stores.filter(s => s.isMuku);
-
-            // 3. Hitung Kebutuhan Toko Reguler dari Offline Pool
             const regRatioSum = regularStores.reduce((sum, s) => sum + s[ratioKey], 0);
-            const mukuRatioSum = mukuStores.reduce((sum, s) => sum + s[ratioKey], 0);
-            const totalRatioSum = regRatioSum + mukuRatioSum;
-
-            let distributedRegular = 0;
-            const results = new Array(stores.length).fill(0);
-
-            // Distribusikan stok offline ke 12 toko reguler
+            
+            // 1. OFFLINE DISTRIBUTION (12 Stores)
+            let offResults = new Array(14).fill(0);
+            let distributedOffline = 0;
             regularStores.forEach(s => {
                 const sIdx = stores.findIndex(st => st.name === s.name);
-                const share = Math.floor(baseOfflinePool * (s[ratioKey] / regRatioSum));
-                results[sIdx] = share;
-                distributedRegular += share;
+                const share = Math.floor(qtyOffline * (s[ratioKey] / regRatioSum));
+                offResults[sIdx] = share;
+                distributedOffline += share;
             });
 
-            // Sisa dari offline pool (akibat pembulatan ke bawah)
-            let remainderOffline = baseOfflinePool - distributedRegular;
+            let remOff = qtyOffline - distributedOffline;
             let j = 0;
-            while(remainderOffline > 0) {
-                const regIdx = stores.findIndex(st => st.name === regularStores[j % regularStores.length].name);
-                results[regIdx]++;
-                remainderOffline--;
+            while(remOff > 0) {
+                const sIdx = stores.findIndex(st => st.name === regularStores[j % regularStores.length].name);
+                offResults[sIdx]++;
+                remOff--;
                 j++;
             }
 
-            // 4. Logika Hybrid MUKU
-            // Melimpah jika Qty PO > 200 (Contoh threshold melimpah)
-            const isAbundant = qtyPo > 200;
-            let mukuTotal = 0;
-
-            mukuStores.forEach(s => {
-                const sIdx = stores.findIndex(st => st.name === s.name);
-                // Muku mendapatkan porsi sesuai rasio mereka relatif terhadap total
-                const share = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum)); 
-                results[sIdx] = share;
-                mukuTotal += share;
+            // 2. ONLINE REQUEST (2 Muku Stores, others 0)
+            let onResults = new Array(14).fill(0);
+            stores.forEach((s, idx) => {
+                if (s.isMuku) {
+                    // Ideal share from offline pool ratio
+                    onResults[idx] = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum));
+                } else {
+                    onResults[idx] = 0; // Regular stores are 0 in online request tab
+                }
             });
 
-            // 5. Adjust Online/Offline Display berdasarkan sumber stok Muku
-            let finalOfflineDisplay, finalOnlineDisplay;
+            rowDataStorage[rowId].off = offResults;
+            rowDataStorage[rowId].on = onResults;
 
-            if (isAbundant) {
-                // Melimpah: Muku "makan" dari stok offline (stok reguler mengecil sedikit secara proporsional)
-                // Kita biarkan distribusi awal tetap, tapi secara logis mereka satu pool
-                finalOfflineDisplay = baseOfflinePool;
-                finalOnlineDisplay = baseOnlinePool;
-            } else {
-                // Sedikit: Offline pool murni untuk reguler, Muku ambil dari jatah Online
-                finalOfflineDisplay = baseOfflinePool + mukuTotal;
-                finalOnlineDisplay = baseOnlinePool - mukuTotal;
-            }
-
-            // Update UI Toko
-            results.forEach((val, idx) => {
-                document.getElementById(`store-${idx}-${rowId}`).value = val;
-            });
-
-            // Update UI Summary
-            document.getElementById(`online-${rowId}`).innerText = finalOnlineDisplay;
-            document.getElementById(`offline-${rowId}`).innerText = finalOfflineDisplay;
-
-            updateTotals(rowId, finalOfflineDisplay);
+            refreshRowUI(rowId);
         }
 
-        function updateManual(rowId) {
+        function updateManual(rowId, storeIdx) {
+            const val = parseInt(document.getElementById(`store-${storeIdx}-${rowId}`).value) || 0;
+            if (currentView === 'offline') rowDataStorage[rowId].off[storeIdx] = val;
+            else rowDataStorage[rowId].on[storeIdx] = val;
+            updateTotals(rowId);
+        }
+
+        function refreshRowUI(rowId) {
+            const currentData = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
+            currentData.forEach((val, idx) => {
+                const input = document.getElementById(`store-${idx}-${rowId}`);
+                input.value = val;
+                // Add styling for zeros in online view for non-muku
+                if (currentView === 'online' && !stores[idx].isMuku) {
+                    input.classList.add('text-slate-300');
+                } else {
+                    input.classList.remove('text-slate-300');
+                }
+            });
+            updateTotals(rowId);
+        }
+
+        function updateTotals(rowId) {
             const qtyOffline = parseInt(document.getElementById(`offline-${rowId}`).innerText) || 0;
-            updateTotals(rowId, qtyOffline);
-        }
+            const qtyOnline = parseInt(document.getElementById(`online-${rowId}`).innerText) || 0;
+            
+            const currentData = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
+            const sum = currentData.reduce((a, b) => a + b, 0);
 
-        function updateTotals(rowId, qtyOffline) {
-            let totalAllocated = 0;
-            stores.forEach((_, index) => {
-                const val = parseInt(document.getElementById(`store-${index}-${rowId}`).value) || 0;
-                totalAllocated += val;
-            });
-            document.getElementById(`total-${rowId}`).innerText = totalAllocated;
-            document.getElementById(`stock-${rowId}`).innerText = totalAllocated;
-            const sisa = qtyOffline - totalAllocated;
+            const totalCell = document.getElementById(`total-${rowId}`);
+            const stockCell = document.getElementById(`stock-${rowId}`);
             const sisaCell = document.getElementById(`sisa-${rowId}`);
+
+            totalCell.innerText = sum;
+            stockCell.innerText = sum;
+
+            const targetPool = currentView === 'offline' ? qtyOffline : qtyOnline;
+            const sisa = targetPool - sum;
             sisaCell.innerText = sisa;
-            sisaCell.className = sisa !== 0 ? "col-results text-center bg-red-600 text-white font-bold" : "col-results text-center bg-red-50 text-red-600";
+            
+            if (currentView === 'offline') {
+                sisaCell.className = sisa !== 0 ? "bg-red-600 text-white font-bold text-center" : "bg-red-50 text-red-600 text-center";
+            } else {
+                sisaCell.className = "bg-blue-50 text-blue-600 text-center font-bold";
+            }
         }
 
         function removeRow(rowId) {
-            if(confirm('Hapus baris artikel ini?')) document.getElementById(`row-${rowId}`).remove();
+            if(confirm('Hapus baris artikel ini?')) {
+                document.getElementById(`row-${rowId}`).remove();
+                delete rowDataStorage[rowId];
+            }
         }
 
         async function saveToGSheet() {
             const scriptUrl = document.getElementById('scriptUrl').value;
-            if (!scriptUrl) {
-                alert('URL Apps Script tidak ditemukan!');
-                return;
-            }
-
+            if (!scriptUrl) { alert('URL Apps Script tidak ditemukan!'); return; }
             const rows = document.querySelectorAll('#tableBody tr');
             const dataToSave = [];
-            
             rows.forEach(tr => {
-                const rowIdSuffix = tr.id.split('-')[1];
+                const rowId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
                 const rowData = {
-                    brand: inputs[0].value,
-                    kode_tag: inputs[1].value,
-                    sku: inputs[2].value,
-                    name_tag: inputs[3].value,
-                    kategori: inputs[4].value,
-                    size: inputs[5].value,
-                    price: inputs[6].value,
-                    color: inputs[7].value,
-                    qty_po: inputs[8].value,
-                    online: document.getElementById(`online-${rowIdSuffix}`).innerText,
-                    offline: document.getElementById(`offline-${rowIdSuffix}`).innerText,
-                    total: document.getElementById(`total-${rowIdSuffix}`).innerText,
-                    sisa: document.getElementById(`sisa-${rowIdSuffix}`).innerText,
-                    timestamp: new Date().toLocaleString()
+                    sku: inputs[2].value, name: inputs[3].value, size: inputs[5].value, qty_po: inputs[8].value,
+                    online: document.getElementById(`online-${rowId}`).innerText,
+                    offline: document.getElementById(`offline-${rowId}`).innerText,
+                    view_context: currentView, timestamp: new Date().toLocaleString()
                 };
-                
                 stores.forEach((s, idx) => {
-                    rowData[s.name.replace(/\s+/g, '_').toLowerCase()] = document.getElementById(`store-${idx}-${rowIdSuffix}`).value;
+                    rowData[s.name.replace(/\s+/g, '_').toLowerCase()] = (currentView === 'offline' ? rowDataStorage[rowId].off[idx] : rowDataStorage[rowId].on[idx]);
                 });
-                
                 dataToSave.push(rowData);
             });
-
-            if (dataToSave.length === 0) return;
-
             const saveBtn = document.getElementById('saveBtn');
-            const originalText = saveBtn.innerHTML;
             saveBtn.disabled = true;
-            saveBtn.innerHTML = `<span class="loader"></span> Menyimpan...`;
-
+            saveBtn.innerHTML = `<span class="loader"></span> Saving...`;
             try {
-                await fetch(scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave)
-                });
-                
+                await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify(dataToSave) });
                 alert('Data berhasil dikirim ke Google Sheets!');
-            } catch (error) {
-                console.error(error);
-                alert('Gagal menyimpan data ke GSheet.');
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = originalText;
-            }
+            } catch (error) { alert('Gagal menyimpan data.'); }
+            finally { saveBtn.disabled = false; saveBtn.innerHTML = `Simpan GSheet`; }
         }
 
         function openSpreadsheetView() {
-            const table = document.getElementById('articleTable');
-            const rows = table.querySelectorAll('tbody tr');
-            let tableHtml = `<html><head><title>Live Spreadsheet View</title><style>body { margin: 0; padding: 0; font-family: sans-serif; } table { border-collapse: collapse; width: 100%; font-size: 12px; } th { background: #f8f9fa; border: 1px solid #e0e0e0; padding: 10px; } td { border: 1px solid #e0e0e0; padding: 8px; }</style></head><body onload="window.print()"><table><thead><tr><th>Brand</th><th>Kode Tag</th><th>SKU</th><th>Name Tag</th><th>Kategori</th><th>Size</th><th>Price</th><th>Color</th><th>PO</th><th>ON</th><th>OFF</th>${stores.map(s => `<th>${s.name}</th>`).join('')}<th>Total</th><th>Stock</th><th>Sisa</th></tr></thead><tbody>`;
+            const rows = document.querySelectorAll('#tableBody tr');
+            let tableHtml = `<html><head><title>Report</title><style>table { border-collapse: collapse; width: 100%; font-size: 10px; } th, td { border: 1px solid #ddd; padding: 4px; }</style></head><body><h3>Heymale Report (${currentView.toUpperCase()})</h3><table><thead><tr><th>SKU</th><th>Name</th><th>Size</th><th>PO</th><th>ON</th><th>OFF</th>${stores.map(s=>`<th>${s.name}</th>`).join('')}</tr></thead><tbody>`;
             rows.forEach(tr => {
+                const rId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
-                const rowIdSuffix = tr.id.split('-')[1];
-                tableHtml += `<tr>`;
-                for(let i=0; i<=8; i++) tableHtml += `<td>${inputs[i].value}</td>`;
-                tableHtml += `<td>${document.getElementById(`online-${rowIdSuffix}`).innerText}</td><td>${document.getElementById(`offline-${rowIdSuffix}`).innerText}</td>`;
-                for(let i=0; i<stores.length; i++) tableHtml += `<td>${document.getElementById(`store-${i}-${rowIdSuffix}`).value}</td>`;
-                tableHtml += `<td>${document.getElementById(`total-${rowIdSuffix}`).innerText}</td><td>${document.getElementById(`stock-${rowIdSuffix}`).innerText}</td><td>${document.getElementById(`sisa-${rowIdSuffix}`).innerText}</td></tr>`;
+                const data = currentView === 'offline' ? rowDataStorage[rId].off : rowDataStorage[rId].on;
+                tableHtml += `<tr><td>${inputs[2].value}</td><td>${inputs[3].value}</td><td>${inputs[5].value}</td><td>${inputs[8].value}</td><td>${document.getElementById(`online-${rId}`).innerText}</td><td>${document.getElementById(`offline-${rId}`).innerText}</td>`;
+                data.forEach(val => tableHtml += `<td>${val}</td>`);
+                tableHtml += `</tr>`;
             });
             tableHtml += `</tbody></table></body></html>`;
-            const blob = new Blob([tableHtml], { type: 'text/html' });
-            window.open(URL.createObjectURL(blob), '_blank');
+            window.open(URL.createObjectURL(new Blob([tableHtml], { type: 'text/html' })), '_blank');
         }
 
         window.onload = () => { for(let i=0; i<5; i++) addRow(); };
