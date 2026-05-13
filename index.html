@@ -235,9 +235,10 @@
             rows.forEach(tr => {
                 const rId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
-                // Mengatur key object agar Timestamp ada di paling depan (kiri)
+                
+                // Timestamp dipindah ke paling kiri (properti pertama dalam objek)
                 const rowData = {
-                    "timestamp": new Date().toLocaleString(),
+                    "timestamp": new Date().toLocaleString('id-ID'),
                     "brand": inputs[0].value, 
                     "kode_tag": inputs[1].value, 
                     "sku_product": inputs[2].value, 
@@ -250,9 +251,12 @@
                     "online": document.getElementById(`online-${rId}`).innerText, 
                     "offline": document.getElementById(`offline-${rId}`).innerText
                 };
-                // Menyimpan data store menggunakan NAMA ASLI STORE sebagai key agar mudah diproses Apps Script
+
+                // Memasukkan data store dengan key nama asli warehouse
                 stores.forEach((s, idx) => { 
-                    rowData[s.name] = (currentView === 'offline' ? rowDataStorage[rId].off[idx] : rowDataStorage[rId].on[idx]); 
+                    const val = (currentView === 'offline' ? rowDataStorage[rId].off[idx] : rowDataStorage[rId].on[idx]);
+                    // Pastikan mengirim sebagai number, tapi di GSheet sudah dipaksa text format
+                    rowData[s.name] = val; 
                 });
                 dataToSave.push(rowData);
             });
