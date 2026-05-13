@@ -3,123 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v5.3</title>
+    <title>Heymale - Article Request System v5.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f0f2f5; 
-            color: #1e293b;
-        }
-        
-        .table-container { 
-            overflow-x: auto; 
-            max-height: 60vh; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            border-radius: 16px;
-            background: white;
-        }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f2f5; color: #1e293b; }
+        .table-container { overflow-x: auto; max-height: 55vh; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-radius: 16px; background: white; }
         table { border-collapse: separate; border-spacing: 0; width: 100%; }
-        
-        th { 
-            position: sticky; 
-            top: 0; 
-            z-index: 30; 
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-size: 10px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .sticky-left {
-            position: sticky;
-            left: 0;
-            z-index: 25;
-            background-color: white;
-            border-right: 2px solid #e2e8f0 !important;
-        }
-
-        input, select { 
-            border: none; 
-            background: transparent; 
-            width: 100%; 
-            height: 100%; 
-            padding: 12px 10px; 
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-        
+        th { position: sticky; top: 0; z-index: 30; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; font-weight: 800; white-space: nowrap; }
+        .sticky-left { position: sticky; left: 0; z-index: 25; background-color: white; border-right: 2px solid #e2e8f0 !important; }
+        input, select { border: none; background: transparent; width: 100%; height: 100%; padding: 12px 10px; font-size: 13px; transition: all 0.2s; }
         input:focus { outline: none; background-color: #f8fafc; box-shadow: inset 0 0 0 2px #3b82f6; }
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         td { border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 0; }
-
-        .col-product { background-color: #ffffff; }
-        .btn-tab {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-bottom: 3px solid transparent;
-        }
-        .btn-tab.active {
-            border-bottom-color: #4f46e5;
-            color: #4f46e5;
-        }
-
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 3px solid #ffffff;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
-        }
-
+        .btn-tab { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 3px solid transparent; }
+        .btn-tab.active { border-bottom-color: #4f46e5; color: #4f46e5; }
+        .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #ffffff; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="p-4 lg:p-8">
 
-    <!-- Header Section -->
-    <header class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 no-print">
+    <header class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div class="flex items-center gap-5">
             <div class="bg-indigo-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-200">HM</div>
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Article Request</h1>
                 <div class="mt-1 flex items-center gap-3">
-                    <!-- URL Apps Script Terpasang Secara Otomatis -->
-                    <input type="text" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwYZib3bj2WHHLZMlVmVhCF4Tlp9HgMSBXCDVx10ft37Ko7e9wZbb3-4lZsC1u_UqOV/exec" class="w-64 border border-slate-300 bg-white px-3 py-1 rounded-lg text-[10px] font-medium focus:ring-2 focus:ring-indigo-500 text-slate-400">
-                    <p class="text-slate-500 text-xs font-semibold">
-                        Ratio: Online 53% | Offline 47%
-                    </p>
+                    <input type="hidden" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwYZib3bj2WHHLZMlVmVhCF4Tlp9HgMSBXCDVx10ft37Ko7e9wZbb3-4lZsC1u_UqOV/exec">
+                    <p class="text-slate-500 text-xs font-semibold">Integrasi: PARUNG (Off) & MALATEK (On)</p>
                 </div>
             </div>
         </div>
         
         <div class="flex flex-wrap gap-3">
-            <button onclick="addRow()" class="flex items-center gap-2 bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold hover:border-indigo-600 hover:text-indigo-600 shadow-sm">
-                Tambah Baris
-            </button>
-            <button id="saveBtn" onclick="saveToGSheet()" class="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">
-                Simpan ke GSheet
-            </button>
-            <button onclick="openSpreadsheetView()" class="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">
-                Preview Report
-            </button>
+            <button onclick="addRow()" class="bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold hover:border-indigo-600 hover:text-indigo-600 transition-all">Tambah Baris</button>
+            <button id="saveBtn" onclick="saveToGSheet()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700">Simpan ke GSheet</button>
         </div>
     </header>
 
-    <!-- Tab Navigation -->
-    <nav class="flex gap-8 mb-4 border-b border-slate-200 no-print">
+    <nav class="flex gap-8 mb-4 border-b border-slate-200">
         <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Dashboard Offline (PARUNG)</button>
         <button onclick="switchView('online')" id="tab-online" class="btn-tab pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Request Online (MALATEK)</button>
     </nav>
 
-    <!-- Main Table Container -->
     <div class="table-container border border-slate-200">
         <table id="articleTable">
             <thead>
@@ -128,7 +55,7 @@
                     <th class="bg-blue-600 px-2 py-4">PO</th>
                     <th class="bg-indigo-700 px-2 py-4">ON (53%)</th>
                     <th class="bg-amber-600 px-2 py-4">OFF (47%)</th>
-                    <th colspan="14" id="main-store-header" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest text-center">Alokasi Distribusi Store</th>
+                    <th colspan="14" id="main-store-header" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest text-center text-[10px]">Alokasi Distribusi Store</th>
                     <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th>
                     <th class="bg-slate-950 no-print"></th>
                 </tr>
@@ -145,6 +72,7 @@
                     <th class="px-4 py-3 bg-indigo-50 text-indigo-800">Online</th>
                     <th class="px-4 py-3 bg-amber-50 text-amber-800">Offline</th>
                     
+                    <!-- Toko list -->
                     <th class="px-3 py-3 bg-slate-50 text-slate-600 border-l border-slate-200">Padang</th>
                     <th class="px-3 py-3 bg-slate-50 text-slate-600">S.Penuh</th>
                     <th class="px-3 py-3 bg-slate-50 text-slate-600">Makassar</th>
@@ -201,14 +129,13 @@
                 tabOffline.classList.add('active');
                 tabOnline.classList.remove('active');
                 mainHeader.innerText = "DASHBOARD OFFLINE (PARUNG)";
-                mainHeader.className = "bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest text-center";
+                mainHeader.className = "bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest text-center text-[10px]";
             } else {
                 tabOffline.classList.remove('active');
                 tabOnline.classList.add('active');
                 mainHeader.innerText = "REQUEST ONLINE (MALATEK)";
-                mainHeader.className = "bg-blue-700 px-4 py-4 border-l border-blue-800 tracking-widest text-center";
+                mainHeader.className = "bg-blue-700 px-4 py-4 border-l border-blue-800 tracking-widest text-center text-[10px]";
             }
-
             Object.keys(rowDataStorage).forEach(rowId => refreshRowUI(rowId));
         }
 
@@ -218,43 +145,12 @@
             const tr = document.createElement('tr');
             tr.id = `row-${rowId}`;
             tr.className = "row-hover transition-colors";
-
-            rowDataStorage[rowId] = {
-                off: new Array(14).fill(0),
-                on: new Array(14).fill(0)
-            };
-
+            rowDataStorage[rowId] = { off: new Array(14).fill(0), on: new Array(14).fill(0) };
             let storeCells = "";
             stores.forEach((store, index) => {
                 storeCells += `<td class="store-cell"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}', ${index})" class="text-center font-bold text-slate-800" value="0"></td>`;
             });
-
-            tr.innerHTML = `
-                <td class="sticky-left"><input type="text" value="HEYMALE" class="font-bold text-indigo-600"></td>
-                <td class="col-product"><input type="text" placeholder="KODE"></td>
-                <td class="col-product"><input type="text" placeholder="SKU"></td>
-                <td class="col-product"><input type="text" placeholder="NAMA ARTIKEL"></td>
-                <td class="col-product">
-                    <select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold text-slate-700 uppercase">
-                        <option value="SHIRT">SHIRT</option>
-                        <option value="PANTS">PANTS</option>
-                        <option value="JACKET">JACKET</option>
-                    </select>
-                </td>
-                <td class="col-product"><input type="text" placeholder="ALL" class="text-center font-bold"></td>
-                <td class="col-product"><input type="number" placeholder="0"></td>
-                <td class="col-product"><input type="text" placeholder="WARNA"></td>
-                <td class="bg-blue-50/50"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-base" placeholder="0"></td>
-                <td class="col-distribution text-center text-indigo-700 font-bold" id="online-${rowId}">0</td>
-                <td class="col-distribution text-center text-amber-700 font-bold" id="offline-${rowId}">0</td>
-                ${storeCells}
-                <td class="col-results text-center" id="total-${rowId}">0</td>
-                <td class="col-results text-center text-green-600 bg-green-50" id="stock-${rowId}">0</td>
-                <td class="col-results text-center text-red-600 bg-red-50" id="sisa-${rowId}">0</td>
-                <td class="no-print text-center px-2">
-                    <button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 transition-colors font-bold text-xl">×</button>
-                </td>
-            `;
+            tr.innerHTML = `<td class="sticky-left"><input type="text" value="HEYMALE" class="font-bold text-indigo-600"></td><td class="col-product"><input type="text" placeholder="KODE"></td><td class="col-product"><input type="text" placeholder="SKU"></td><td class="col-product"><input type="text" placeholder="NAMA ARTIKEL"></td><td class="col-product"><select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold text-slate-700 uppercase"><option value="SHIRT">SHIRT</option><option value="PANTS">PANTS</option><option value="JACKET">JACKET</option></select></td><td class="col-product"><input type="text" placeholder="ALL" class="text-center font-bold"></td><td class="col-product"><input type="number" placeholder="0"></td><td class="col-product"><input type="text" placeholder="WARNA"></td><td class="bg-blue-50/50"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-base" placeholder="0"></td><td class="col-distribution text-center text-indigo-700 font-bold" id="online-${rowId}">0</td><td class="col-distribution text-center text-amber-700 font-bold" id="offline-${rowId}">0</td>${storeCells}<td class="col-results text-center" id="total-${rowId}">0</td><td class="col-results text-center text-green-600 bg-green-50" id="stock-${rowId}">0</td><td class="col-results text-center text-red-600 bg-red-50" id="sisa-${rowId}">0</td><td class="no-print text-center px-2"><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 transition-colors font-bold text-xl">×</button></td>`;
             tbody.appendChild(tr);
         }
 
@@ -262,7 +158,6 @@
             const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
             const category = document.getElementById(`cat-${rowId}`).value;
             const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
-            
             const qtyOnline = Math.round(qtyPo * 0.53);
             const qtyOffline = qtyPo - qtyOnline;
             document.getElementById(`online-${rowId}`).innerText = qtyOnline;
@@ -279,7 +174,6 @@
                 offResults[sIdx] = share;
                 distributedOffline += share;
             });
-
             let remOff = qtyOffline - distributedOffline;
             let j = 0;
             while(remOff > 0) {
@@ -288,19 +182,13 @@
                 remOff--;
                 j++;
             }
-
             let onResults = new Array(14).fill(0);
             stores.forEach((s, idx) => {
-                if (s.isMuku) {
-                    onResults[idx] = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum));
-                } else {
-                    onResults[idx] = 0; 
-                }
+                if (s.isMuku) onResults[idx] = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum));
+                else onResults[idx] = 0; 
             });
-
             rowDataStorage[rowId].off = offResults;
             rowDataStorage[rowId].on = onResults;
-
             refreshRowUI(rowId);
         }
 
@@ -316,117 +204,67 @@
             currentData.forEach((val, idx) => {
                 const input = document.getElementById(`store-${idx}-${rowId}`);
                 input.value = val;
-                if (currentView === 'online' && !stores[idx].isMuku) {
-                    input.classList.add('text-slate-300');
-                } else {
-                    input.classList.remove('text-slate-300');
-                }
+                if (currentView === 'online' && !stores[idx].isMuku) input.classList.add('text-slate-300');
+                else input.classList.remove('text-slate-300');
             });
             updateTotals(rowId);
         }
 
         function updateTotals(rowId) {
-            const qtyOffline = parseInt(document.getElementById(`offline-${rowId}`).innerText) || 0;
-            const qtyOnline = parseInt(document.getElementById(`online-${rowId}`).innerText) || 0;
-            
+            const qtyOff = parseInt(document.getElementById(`offline-${rowId}`).innerText) || 0;
+            const qtyOn = parseInt(document.getElementById(`online-${rowId}`).innerText) || 0;
             const currentData = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
             const sum = currentData.reduce((a, b) => a + b, 0);
-
-            const totalCell = document.getElementById(`total-${rowId}`);
-            const stockCell = document.getElementById(`stock-${rowId}`);
-            const sisaCell = document.getElementById(`sisa-${rowId}`);
-
-            totalCell.innerText = sum;
-            stockCell.innerText = sum;
-
-            const targetPool = currentView === 'offline' ? qtyOffline : qtyOnline;
-            const sisa = targetPool - sum;
-            sisaCell.innerText = sisa;
-            
-            if (currentView === 'offline') {
-                sisaCell.className = sisa !== 0 ? "bg-red-600 text-white font-bold text-center" : "bg-red-50 text-red-600 text-center";
-            } else {
-                sisaCell.className = "bg-blue-50 text-blue-600 text-center font-bold";
-            }
+            document.getElementById(`total-${rowId}`).innerText = sum;
+            document.getElementById(`stock-${rowId}`).innerText = sum;
+            const target = currentView === 'offline' ? qtyOff : qtyOn;
+            const sisa = target - sum;
+            const sc = document.getElementById(`sisa-${rowId}`);
+            sc.innerText = sisa;
+            sc.className = currentView === 'offline' ? (sisa !== 0 ? "bg-red-600 text-white font-bold text-center" : "bg-red-50 text-red-600 text-center") : "bg-blue-50 text-blue-600 text-center font-bold";
         }
 
-        function removeRow(rowId) {
-            if(confirm('Hapus baris artikel ini?')) {
-                document.getElementById(`row-${rowId}`).remove();
-                delete rowDataStorage[rowId];
-            }
-        }
+        function removeRow(rowId) { if(confirm('Hapus baris?')) { document.getElementById(`row-${rowId}`).remove(); delete rowDataStorage[rowId]; } }
 
         async function saveToGSheet() {
             const scriptUrl = document.getElementById('scriptUrl').value;
-            if (!scriptUrl) { alert('URL Apps Script tidak ditemukan!'); return; }
-            
             const targetSheet = currentView === 'offline' ? 'PARUNG' : 'MALATEK';
             const rows = document.querySelectorAll('#tableBody tr');
             const dataToSave = [];
             
             rows.forEach(tr => {
-                const rowId = tr.id.split('-')[1];
+                const rId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
+                // Mengatur key object agar Timestamp ada di paling depan (kiri)
                 const rowData = {
-                    brand: inputs[0].value,
-                    kode_tag: inputs[1].value,
-                    sku: inputs[2].value, 
-                    name: inputs[3].value, 
-                    kategori: inputs[4].value,
-                    size: inputs[5].value, 
-                    price: inputs[6].value,
-                    color: inputs[7].value,
-                    qty_po: inputs[8].value,
-                    online: document.getElementById(`online-${rowId}`).innerText,
-                    offline: document.getElementById(`offline-${rowId}`).innerText,
-                    timestamp: new Date().toLocaleString()
+                    "timestamp": new Date().toLocaleString(),
+                    "brand": inputs[0].value, 
+                    "kode_tag": inputs[1].value, 
+                    "sku_product": inputs[2].value, 
+                    "name_tag": inputs[3].value, 
+                    "kategori": inputs[4].value, 
+                    "size": inputs[5].value, 
+                    "price": inputs[6].value, 
+                    "color": inputs[7].value, 
+                    "qty_po": inputs[8].value, 
+                    "online": document.getElementById(`online-${rId}`).innerText, 
+                    "offline": document.getElementById(`offline-${rId}`).innerText
                 };
-                stores.forEach((s, idx) => {
-                    rowData[s.name.replace(/\s+/g, '_').toLowerCase()] = (currentView === 'offline' ? rowDataStorage[rowId].off[idx] : rowDataStorage[rowId].on[idx]);
+                // Menyimpan data store menggunakan NAMA ASLI STORE sebagai key agar mudah diproses Apps Script
+                stores.forEach((s, idx) => { 
+                    rowData[s.name] = (currentView === 'offline' ? rowDataStorage[rId].off[idx] : rowDataStorage[rId].on[idx]); 
                 });
                 dataToSave.push(rowData);
             });
 
-            if (dataToSave.length === 0) return;
-
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            const originalText = saveBtn.innerText;
-            saveBtn.innerHTML = `<span class="loader"></span> Menyimpan...`;
-
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loader"></span> Saving...`;
             try {
-                await fetch(scriptUrl, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        sheetName: targetSheet,
-                        data: dataToSave
-                    }) 
-                });
-                alert(`Perintah simpan ke sheet ${targetSheet} telah dikirim! Tunggu beberapa saat.`);
-            } catch (error) { 
-                alert('Gagal mengirim data. Pastikan Apps Script di-deploy sebagai Web App.'); 
-            } finally { 
-                saveBtn.disabled = false; 
-                saveBtn.innerText = originalText; 
-            }
-        }
-
-        function openSpreadsheetView() {
-            const rows = document.querySelectorAll('#tableBody tr');
-            let tableHtml = `<html><head><title>Report ${currentView.toUpperCase()}</title><style>table { border-collapse: collapse; width: 100%; font-size: 10px; } th, td { border: 1px solid #ddd; padding: 4px; } th { background: #f4f4f4; }</style></head><body><h3>Heymale Report (${currentView === 'offline' ? 'PARUNG' : 'MALATEK'})</h3><table><thead><tr><th>SKU</th><th>Name</th><th>Size</th><th>PO</th><th>ON</th><th>OFF</th>${stores.map(s=>`<th>${s.name}</th>`).join('')}</tr></thead><tbody>`;
-            rows.forEach(tr => {
-                const rId = tr.id.split('-')[1];
-                const inputs = tr.querySelectorAll('input, select');
-                const data = currentView === 'offline' ? rowDataStorage[rId].off : rowDataStorage[rId].on;
-                tableHtml += `<tr><td>${inputs[2].value}</td><td>${inputs[3].value}</td><td>${inputs[5].value}</td><td>${inputs[8].value}</td><td>${document.getElementById(`online-${rId}`).innerText}</td><td>${document.getElementById(`offline-${rId}`).innerText}</td>`;
-                data.forEach(val => tableHtml += `<td>${val}</td>`);
-                tableHtml += `</tr>`;
-            });
-            tableHtml += `</tbody></table></body></html>`;
-            window.open(URL.createObjectURL(new Blob([tableHtml], { type: 'text/html' })), '_blank');
+                await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheetName: targetSheet, data: dataToSave }) });
+                alert(`Data terkirim ke sheet ${targetSheet}!`);
+            } catch (error) { alert('Gagal kirim data.'); }
+            finally { btn.disabled = false; btn.innerText = `Simpan ke GSheet`; }
         }
 
         window.onload = () => { for(let i=0; i<5; i++) addRow(); };
