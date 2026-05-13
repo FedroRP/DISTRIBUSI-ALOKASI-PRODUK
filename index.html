@@ -3,68 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Article Request System v6.0</title>
+    <title>Article Request System v8.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .table-container { overflow-x: auto; max-height: 65vh; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-radius: 12px; background: white; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .table-container { overflow-x: auto; max-height: 60vh; border-radius: 16px; background: white; }
         table { border-collapse: separate; border-spacing: 0; width: 100%; }
         th { position: sticky; top: 0; z-index: 30; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; font-weight: 800; white-space: nowrap; }
         .sticky-left { position: sticky; left: 0; z-index: 25; background-color: white; border-right: 1px solid #e2e8f0 !important; }
-        input, select { border: none; background: transparent; width: 100%; height: 100%; padding: 12px 10px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        input, select { border: none; background: transparent; width: 100%; height: 100%; padding: 12px 10px; font-size: 13px; font-weight: 600; }
         input:focus { outline: none; background-color: #f1f5f9; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         td { border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 0; }
-        .btn-tab { transition: all 0.3s ease; border-bottom: 3px solid transparent; color: #94a3b8; padding-bottom: 8px; }
+        .btn-tab { transition: all 0.3s ease; border-bottom: 3px solid transparent; color: #94a3b8; }
         .btn-tab.active { border-bottom-color: #4f46e5; color: #4f46e5; }
-        .loader { border: 2px solid #f3f3f3; border-radius: 50%; border-top: 2px solid #ffffff; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; }
+        .loader { border: 2px solid #f3f3f3; border-radius: 50%; border-top: 2px solid #ffffff; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
-        .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
-        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="p-6 lg:p-8">
+<body class="p-6">
 
     <header class="mb-8 flex flex-col lg:flex-row justify-between items-center gap-6">
         <div class="flex items-center gap-5">
-            <div id="brand-logo" class="bg-indigo-600 text-white w-16 h-16 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-100 transition-colors">HM</div>
+            <div id="brand-logo" class="bg-indigo-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-xl shadow-xl transition-all">HM</div>
             <div>
                 <div class="flex items-center gap-3">
-                    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900" id="main-title">Article Request</h1>
-                    <select id="brandSelector" onchange="initBrandMode()" class="bg-slate-100 border-none rounded-lg px-3 py-1 text-xs font-bold text-slate-600 focus:ring-2 focus:ring-indigo-500 w-auto h-auto">
-                        <option value="heymale">HEYMALE</option>
-                        <option value="heylocal">HEYLOCAL</option>
+                    <h1 class="text-2xl font-extrabold text-slate-900">Article Request</h1>
+                    <select id="brandSelector" onchange="initBrandMode()" class="bg-slate-100 rounded-lg px-2 py-1 text-xs font-bold text-slate-600 outline-none">
+                        <option value="HEYMALE">HEYMALE</option>
+                        <option value="HEYLOCAL">HEYLOCAL</option>
                     </select>
                 </div>
-                <div class="mt-1 flex items-center gap-3">
-                    <input type="hidden" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwYZib3bj2WHHLZMlVmVhCF4Tlp9HgMSBXCDVx10ft37Ko7e9wZbb3-4lZsC1u_UqOV/exec">
-                    <p class="text-slate-500 text-sm font-medium" id="integration-label">Integrasi: PARUNG (Off) & MALATEK (On)</p>
-                </div>
+                <p class="text-slate-500 text-xs font-medium">Integrasi: Cloud Sync Active</p>
             </div>
         </div>
         
-        <div class="flex gap-4">
-            <button onclick="addRow()" class="bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all shadow-sm">Tambah Baris</button>
-            <button id="saveBtn" onclick="saveToGSheet()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">Simpan ke GSheet</button>
+        <div class="flex gap-3">
+            <button onclick="addRow()" class="bg-white border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all">Tambah Baris</button>
+            <button id="saveBtn" onclick="saveToGSheet()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-700 transition-all">Simpan ke GSheet</button>
         </div>
     </header>
 
-    <nav class="flex gap-10 mb-6 border-b border-slate-200">
-        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active text-sm font-bold uppercase tracking-wider">Dashboard Offline (PARUNG)</button>
-        <button onclick="switchView('online')" id="tab-online" class="btn-tab text-sm font-bold uppercase tracking-wider">Request Online (MALATEK)</button>
+    <nav class="flex gap-8 mb-6 border-b border-slate-200">
+        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active pb-2 text-sm font-bold uppercase">Dashboard Offline</button>
+        <button onclick="switchView('online')" id="tab-online" class="btn-tab pb-2 text-sm font-bold uppercase">Request Online</button>
     </nav>
 
-    <div class="table-container border border-slate-200">
+    <div class="table-container border border-slate-200 shadow-sm">
         <table id="articleTable">
             <thead>
-                <tr id="header-row-1" class="bg-[#0f172a] text-white uppercase text-[9px] tracking-widest">
-                    <!-- Dynamic Headers will be injected here -->
-                </tr>
-                <tr id="header-row-2" class="bg-white text-slate-400 font-bold border-b border-slate-200 text-[10px]">
-                    <!-- Dynamic Sub-headers will be injected here -->
-                </tr>
+                <tr id="header-row-1" class="bg-slate-900 text-white uppercase text-[9px] tracking-widest"></tr>
+                <tr id="header-row-2" class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200 text-[10px]"></tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
@@ -72,114 +61,68 @@
 
     <script>
         const config = {
-            heymale: {
-                ratioOn: 0.53,
-                ratioOff: 0.47,
-                categories: ["SHIRT", "PANTS", "JACKET"],
+            HEYMALE: {
+                ratioOn: 0.53, ratioOff: 0.47,
                 stores: [
-                    { name: "HEYMALE PADANG", rShirt: 11.62, rPants: 11.93, rJacket: 11.93, isMuku: false },
-                    { name: "HEYMALE SUNGAI PENUH", rShirt: 10.95, rPants: 8.09, rJacket: 8.09, isMuku: false },
-                    { name: "HEYMALE MAKASSAR", rShirt: 10.81, rPants: 11.18, rJacket: 10.31, isMuku: false },
-                    { name: "HEYMALE PEKANBARU", rShirt: 10.17, rPants: 11.93, rJacket: 11.93, isMuku: false },
-                    { name: "HEYMALE BXC", rShirt: 9.89, rPants: 10.83, rJacket: 10.83, isMuku: false },
-                    { name: "HEYMALE ACEH", rShirt: 9.75, rPants: 8.78, rJacket: 8.78, isMuku: false },
-                    { name: "HEYMALE PURI", rShirt: 9.47, rPants: 10.64, rJacket: 10.64, isMuku: false },
-                    { name: "HEYMALE SUN PLAZA MEDAN", rShirt: 9.33, rPants: 9.69, rJacket: 9.69, isMuku: false },
-                    { name: "HEYMALE PIM", rShirt: 8.99, rPants: 11.18, rJacket: 11.18, isMuku: false },
-                    { name: "HEYMALE PALEMBANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
-                    { name: "HEYMALE PASKAL BANDUNG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
-                    { name: "HEYMALE SEMARANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
-                    { name: "HEYMALE MUKU SURABAYA", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true },
-                    { name: "HEYMALE MUKU BLOK M", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true }
+                    { name: "HEYMALE PADANG", r: 11.62 }, { name: "HEYMALE SUNGAI PENUH", r: 10.95 },
+                    { name: "HEYMALE MAKASSAR", r: 10.81 }, { name: "HEYMALE PEKANBARU", r: 10.17 },
+                    { name: "HEYMALE BXC", r: 9.89 }, { name: "HEYMALE ACEH", r: 9.75 },
+                    { name: "HEYMALE PURI", r: 9.47 }, { name: "HEYMALE SUN PLAZA MEDAN", r: 9.33 },
+                    { name: "HEYMALE PIM", r: 8.99 }, { name: "HEYMALE PALEMBANG", r: 8.99 },
+                    { name: "HEYMALE PASKAL BANDUNG", r: 8.99 }, { name: "HEYMALE SEMARANG", r: 8.99 },
+                    { name: "HEYMALE MUKU SURABAYA", r: 8.99, isMuku: true }, { name: "HEYMALE MUKU BLOK M", r: 8.99, isMuku: true }
                 ]
             },
-            heylocal: {
-                ratioOn: 0.5383,
-                ratioOff: 0.4617,
-                categories: ["SCARF", "SHIRT", "PANTS"],
+            HEYLOCAL: {
+                ratioOn: 0.5383, ratioOff: 0.4617,
                 stores: [
-                    { name: "HEYLOCAL ACEH", ratio: 7.98 },
-                    { name: "HEYLOCAL BALIKPAPAN", ratio: 5.59 },
-                    { name: "HEYLOCAL BXC DEAL POS", ratio: 6.78 },
-                    { name: "HEYLOCAL MAKASSAR", ratio: 4.79 },
-                    { name: "HEYLOCAL MEDAN OCBC", ratio: 4.19 },
-                    { name: "HEYLOCAL PADANG", ratio: 8.78 },
-                    { name: "HEYLOCAL PAKUWON MALL BEKASI", ratio: 4.79 },
-                    { name: "HEYLOCAL PALEMBANG", ratio: 6.98 },
-                    { name: "HEYLOCAL PEJATEN", ratio: 4.79 },
-                    { name: "HEYLOCAL PEKANBARU", ratio: 5.39 },
-                    { name: "HEYLOCAL SAMARINDA", ratio: 4.79 },
-                    { name: "HEYLOCAL SENTUL", ratio: 4.39 },
-                    { name: "HEYLOCAL SUMABA", ratio: 4.39 },
-                    { name: "HEYLOCAL SUMMARECON MALL BEKASI", ratio: 3.79 },
-                    { name: "HEYLOCAL SUNGAI PENUH", ratio: 3.59 },
-                    { name: "HEYLOCAL SUNPLAZA MEDAN", ratio: 4.79 },
-                    { name: "HSC PIM", ratio: 5.59 },
-                    { name: "HEYLOCAL WH SURABAYA", ratio: 4.79 },
-                    { name: "HEYLOCAL LAMPUNG", ratio: 3.85 }
+                    { name: "HEYLOCAL ACEH", r: 7.98 }, { name: "HEYLOCAL BALIKPAPAN", r: 5.59 },
+                    { name: "HEYLOCAL BXC", r: 6.78 }, { name: "HEYLOCAL MAKASSAR", r: 4.79 },
+                    { name: "HEYLOCAL MEDAN OCBC", r: 4.19 }, { name: "HEYLOCAL PADANG", r: 8.78 },
+                    { name: "HEYLOCAL PAKUWON MALL BEKASI", r: 4.79 }, { name: "HEYLOCAL PALEMBANG", r: 6.98 },
+                    { name: "HEYLOCAL PEJATEN", r: 4.79 }, { name: "HEYLOCAL PEKANBARU", r: 5.39 },
+                    { name: "HEYLOCAL SAMARINDA", r: 4.79 }, { name: "HEYLOCAL SENTUL", r: 4.39 },
+                    { name: "HEYLOCAL BANDUNG", r: 4.39 }, { name: "HEYLOCAL SUMMARECON MALL BEKASI", r: 3.79 },
+                    { name: "HEYLOCAL SUNGAI PENUH", r: 3.59 }, { name: "HEYLOCAL SUN PLAZA MEDAN", r: 4.79 },
+                    { name: "HEYLOCAL PIM", r: 5.59 }, { name: "HEYLOCAL WH SURABAYA", r: 4.79 },
+                    { name: "HEYLOCAL LAMPUNG", r: 3.85 }, { name: "HEYLOCAL JAMBI", r: 3.85 }
                 ]
             }
         };
 
-        let currentBrand = 'heymale';
+        let currentBrand = 'HEYMALE';
         let currentView = 'offline';
-        let rowDataStorage = {}; 
+        let rowDataStorage = {};
 
         function initBrandMode() {
             currentBrand = document.getElementById('brandSelector').value;
             const logo = document.getElementById('brand-logo');
+            logo.innerText = currentBrand === 'HEYMALE' ? 'HM' : 'HL';
+            logo.className = currentBrand === 'HEYMALE' ? 'bg-indigo-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-xl shadow-xl' : 'bg-rose-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-xl shadow-xl';
             
-            if (currentBrand === 'heylocal') {
-                logo.innerText = 'HL';
-                logo.className = 'bg-rose-600 text-white w-16 h-16 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-rose-100 transition-colors';
-            } else {
-                logo.innerText = 'HM';
-                logo.className = 'bg-indigo-600 text-white w-16 h-16 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-100 transition-colors';
-            }
-
             renderHeaders();
             document.getElementById('tableBody').innerHTML = '';
             rowDataStorage = {};
             for(let i=0; i<5; i++) addRow();
-            switchView(currentView);
         }
 
         function renderHeaders() {
-            const brandData = config[currentBrand];
-            const storesList = brandData.stores;
+            const stores = config[currentBrand].stores;
             const h1 = document.getElementById('header-row-1');
             const h2 = document.getElementById('header-row-2');
             
-            // Header Row 1
-            let html1 = `<th colspan="8" class="px-4 py-4 sticky-left bg-[#0f172a]">Info Artikel</th>
-                         <th class="bg-[#3b82f6] px-2 py-4">PO</th>
-                         <th class="bg-[#4f46e5] px-2 py-4">ON (${(brandData.ratioOn*100).toFixed(1)}%)</th>
-                         <th class="bg-[#ea580c] px-2 py-4">OFF (${(brandData.ratioOff*100).toFixed(1)}%)</th>
-                         <th colspan="${storesList.length}" id="main-store-header" class="bg-[#059669] px-4 py-4 border-l border-emerald-800 tracking-widest text-center">Dashboard Store</th>
-                         <th colspan="3" class="bg-[#1e293b] px-2 py-4">Verifikasi</th><th></th>`;
-            h1.innerHTML = html1;
+            h1.innerHTML = `<th colspan="8" class="px-4 py-4 sticky-left bg-slate-950">Info Artikel</th>
+                            <th class="bg-blue-600 px-2 py-4">PO</th>
+                            <th class="bg-indigo-700 px-2 py-4">ON</th>
+                            <th class="bg-orange-600 px-2 py-4">OFF</th>
+                            <th colspan="${stores.length}" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 text-center">Dashboard Distribusi</th>
+                            <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th><th></th>`;
 
-            // Header Row 2
-            let html2 = `<th class="px-4 py-3 sticky-left min-w-[110px] text-slate-500">BRAND</th>
-                         <th class="px-4 py-3 min-w-[100px] text-slate-500">KODE TAG</th>
-                         <th class="px-4 py-3 min-w-[130px] text-slate-500">SKU</th>
-                         <th class="px-4 py-3 min-w-[180px] text-slate-500">NAME TAG</th>
-                         <th class="px-4 py-3 min-w-[120px] text-slate-500">KATEGORI</th>
-                         <th class="px-4 py-3 min-w-[70px] text-slate-500">SIZE</th>
-                         <th class="px-4 py-3 min-w-[110px] text-slate-500">PRICE</th>
-                         <th class="px-4 py-3 min-w-[100px] text-slate-500">COLOR</th>
-                         <th class="px-4 py-3 bg-blue-50 text-blue-700">QTY PO</th>
-                         <th class="px-4 py-3 bg-indigo-50 text-indigo-700">ONLINE</th>
-                         <th class="px-4 py-3 bg-orange-50 text-orange-700">OFFLINE</th>`;
-            
-            storesList.forEach(s => {
-                const shortName = s.name.replace('HEYMALE ', '').replace('HEYLOCAL ', '');
-                html2 += `<th class="px-2 py-3 bg-slate-50 text-slate-600 border-l border-slate-200 text-[9px] min-w-[80px]">${shortName}</th>`;
+            let html2 = `<th class="px-4 py-3 sticky-left min-w-[100px]">Brand</th><th class="px-4 py-3 min-w-[100px]">Kode</th><th class="px-4 py-3 min-w-[130px]">SKU</th><th class="px-4 py-3 min-w-[180px]">Nama</th><th class="px-4 py-3 min-w-[120px]">Kategori</th><th class="px-4 py-3 min-w-[70px]">Size</th><th class="px-4 py-3 min-w-[110px]">Price</th><th class="px-4 py-3 min-w-[100px]">Color</th><th class="px-4 py-3 bg-blue-50 text-blue-800">PO</th><th class="px-4 py-3 bg-indigo-50 text-indigo-800">ON</th><th class="px-4 py-3 bg-orange-50 text-orange-800">OFF</th>`;
+            stores.forEach(s => {
+                html2 += `<th class="px-2 py-3 bg-slate-50 text-slate-600 border-l border-slate-200 text-[9px] min-w-[80px]">${s.name.replace(currentBrand + ' ', '')}</th>`;
             });
-
-            html2 += `<th class="px-4 py-3 bg-slate-100 text-slate-800 border-l border-slate-200">TOTAL</th>
-                      <th class="px-4 py-3 bg-green-50 text-green-700">STOCK</th>
-                      <th class="px-4 py-3 bg-red-50 text-red-700">SISA</th><th></th>`;
+            html2 += `<th class="px-4 py-3 bg-slate-100 text-slate-800 border-l border-slate-200">TOTAL</th><th class="px-4 py-3 bg-green-50 text-green-700">STOCK</th><th class="px-4 py-3 bg-red-50 text-red-700">SISA</th><th></th>`;
             h2.innerHTML = html2;
         }
 
@@ -187,198 +130,116 @@
             currentView = view;
             document.getElementById('tab-offline').classList.toggle('active', view === 'offline');
             document.getElementById('tab-online').classList.toggle('active', view === 'online');
-            
-            const mainHeader = document.getElementById('main-store-header');
-            if (view === 'offline') {
-                mainHeader.innerText = "DASHBOARD OFFLINE (PARUNG)";
-                mainHeader.className = "bg-[#059669] px-4 py-4 border-l border-emerald-800 tracking-widest text-center";
-            } else {
-                mainHeader.innerText = "REQUEST ONLINE (MALATEK)";
-                mainHeader.className = "bg-[#4f46e5] px-4 py-4 border-l border-indigo-800 tracking-widest text-center";
-            }
-            Object.keys(rowDataStorage).forEach(rowId => refreshRowUI(rowId));
+            Object.keys(rowDataStorage).forEach(refreshRowUI);
         }
 
         function addRow() {
-            const tbody = document.getElementById('tableBody');
             const rowId = Math.random().toString(36).substr(2, 9);
             const tr = document.createElement('tr');
             tr.id = `row-${rowId}`;
-            tr.className = "hover:bg-slate-50 transition-colors";
-            
-            const brandData = config[currentBrand];
-            rowDataStorage[rowId] = { off: new Array(brandData.stores.length).fill(0), on: new Array(brandData.stores.length).fill(0) };
+            const stores = config[currentBrand].stores;
+            rowDataStorage[rowId] = { off: new Array(stores.length).fill(0), on: new Array(stores.length).fill(0) };
             
             let storeCells = "";
-            brandData.stores.forEach((store, index) => {
-                storeCells += `<td class="store-cell"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}', ${index})" class="text-center font-bold text-slate-700" value="0"></td>`;
+            stores.forEach((_, i) => {
+                storeCells += `<td><input type="number" id="store-${i}-${rowId}" oninput="updateManual('${rowId}', ${i})" class="text-center font-bold text-slate-700" value="0"></td>`;
             });
 
-            const catOptions = brandData.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+            const catOptions = (currentBrand === 'HEYLOCAL' ? ['SCARF', 'SHIRT', 'PANTS'] : ['SHIRT', 'PANTS', 'JACKET']).map(c => `<option value="${c}">${c}</option>`).join('');
 
-            tr.innerHTML = `
-                <td class="sticky-left"><input type="text" value="${currentBrand.toUpperCase()}" class="font-bold ${currentBrand === 'heymale' ? 'text-indigo-600' : 'text-rose-600'}"></td>
-                <td><input type="text" placeholder="KODE"></td>
-                <td><input type="text" placeholder="SKU"></td>
-                <td><input type="text" placeholder="NAMA ARTIKEL"></td>
-                <td><select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold text-slate-700 uppercase">${catOptions}</select></td>
-                <td><input type="text" placeholder="S" class="text-center font-bold"></td>
-                <td><input type="number" placeholder="0" class="text-center"></td>
-                <td><input type="text" placeholder="WARNA"></td>
-                <td class="bg-blue-50/30"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-base" placeholder="0"></td>
-                <td class="text-center text-indigo-700 font-bold" id="online-${rowId}">0</td>
-                <td class="text-center text-orange-700 font-bold" id="offline-${rowId}">0</td>
-                ${storeCells}
-                <td class="text-center font-bold text-slate-800 border-l border-slate-200" id="total-${rowId}">0</td>
-                <td class="text-center text-green-600 font-bold bg-green-50/50" id="stock-${rowId}">0</td>
-                <td class="text-center text-red-600 font-bold bg-red-50/50" id="sisa-${rowId}">0</td>
-                <td class="text-center px-2"><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 font-bold text-xl">×</button></td>
-            `;
-            tbody.appendChild(tr);
+            tr.innerHTML = `<td class="sticky-left"><input type="text" value="${currentBrand}" class="font-bold"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><select onchange="calculateRow('${rowId}')" id="cat-${rowId}">${catOptions}</select></td><td><input type="text" class="text-center"></td><td><input type="number"></td><td><input type="text"></td><td class="bg-blue-50/30"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center"></td><td id="online-${rowId}" class="text-center font-bold text-indigo-700">0</td><td id="offline-${rowId}" class="text-center font-bold text-orange-700">0</td>${storeCells}<td id="total-${rowId}" class="text-center font-bold">0</td><td id="stock-${rowId}" class="text-center text-green-600 font-bold bg-green-50">0</td><td id="sisa-${rowId}" class="text-center text-red-600 font-bold bg-red-50">0</td><td><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 font-bold">×</button></td>`;
+            document.getElementById('tableBody').appendChild(tr);
         }
 
         function calculateRow(rowId) {
             const brandData = config[currentBrand];
             const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
-            const category = document.getElementById(`cat-${rowId}`).value;
+            const qtyOn = Math.round(qtyPo * brandData.ratioOn);
+            const qtyOff = qtyPo - qtyOn;
             
-            const qtyOnline = Math.round(qtyPo * brandData.ratioOn);
-            const qtyOffline = qtyPo - qtyOnline;
-            
-            document.getElementById(`online-${rowId}`).innerText = qtyOnline;
-            document.getElementById(`offline-${rowId}`).innerText = qtyOffline;
+            document.getElementById(`online-${rowId}`).innerText = qtyOn;
+            document.getElementById(`offline-${rowId}`).innerText = qtyOff;
 
             let offResults = new Array(brandData.stores.length).fill(0);
             let onResults = new Array(brandData.stores.length).fill(0);
-
-            if (currentBrand === 'heymale') {
-                const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
-                const regularStores = brandData.stores.filter(s => !s.isMuku);
-                const regRatioSum = regularStores.reduce((sum, s) => sum + s[ratioKey], 0);
-                
-                let distributedOffline = 0;
-                regularStores.forEach(s => {
-                    const sIdx = brandData.stores.findIndex(st => st.name === s.name);
-                    const share = Math.floor(qtyOffline * (s[ratioKey] / regRatioSum));
-                    offResults[sIdx] = share;
-                    distributedOffline += share;
-                });
-                let remOff = qtyOffline - distributedOffline;
-                let j = 0;
-                while(remOff > 0) {
-                    const sIdx = brandData.stores.findIndex(st => st.name === regularStores[j % regularStores.length].name);
-                    offResults[sIdx]++; remOff--; j++;
-                }
-                brandData.stores.forEach((s, idx) => {
-                    if (s.isMuku) onResults[idx] = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum));
-                });
-            } else {
-                // Heylocal Logic
-                let distributedOffline = 0;
-                brandData.stores.forEach((s, idx) => {
-                    const share = Math.floor(qtyOffline * (s.ratio / 100));
-                    offResults[idx] = share;
-                    distributedOffline += share;
-                });
-                let remOff = qtyOffline - distributedOffline;
-                let j = 0;
-                while(remOff > 0) {
-                    offResults[j % brandData.stores.length]++; remOff--; j++;
-                }
-                // Heylocal Online usually follows similar pattern or simple split
-                brandData.stores.forEach((s, idx) => {
-                    onResults[idx] = Math.floor(qtyOnline * (s.ratio / 100));
-                });
-            }
             
+            // Logika Distribusi Sederhana untuk Website
+            brandData.stores.forEach((s, i) => {
+                offResults[i] = Math.floor(qtyOff * (s.r / 100));
+                onResults[i] = s.isMuku ? Math.floor(qtyOn * 0.5) : 0; 
+            });
+
             rowDataStorage[rowId].off = offResults;
             rowDataStorage[rowId].on = onResults;
             refreshRowUI(rowId);
         }
 
-        function updateManual(rowId, storeIdx) {
-            const val = parseInt(document.getElementById(`store-${storeIdx}-${rowId}`).value) || 0;
-            if (currentView === 'offline') rowDataStorage[rowId].off[storeIdx] = val;
-            else rowDataStorage[rowId].on[storeIdx] = val;
+        function updateManual(rowId, idx) {
+            const val = parseInt(document.getElementById(`store-${idx}-${rowId}`).value) || 0;
+            if (currentView === 'offline') rowDataStorage[rowId].off[idx] = val;
+            else rowDataStorage[rowId].on[idx] = val;
             updateTotals(rowId);
         }
 
         function refreshRowUI(rowId) {
-            const currentData = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
-            currentData.forEach((val, idx) => {
-                const input = document.getElementById(`store-${idx}-${rowId}`);
-                if (input) {
-                    input.value = val;
-                    if (currentBrand === 'heymale' && currentView === 'online' && !config.heymale.stores[idx].isMuku) {
-                        input.classList.add('text-slate-300');
-                    } else {
-                        input.classList.remove('text-slate-300');
-                    }
-                }
-            });
+            const data = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
+            data.forEach((v, i) => { document.getElementById(`store-${i}-${rowId}`).value = v; });
             updateTotals(rowId);
         }
 
         function updateTotals(rowId) {
-            const qtyOff = parseInt(document.getElementById(`offline-${rowId}`).innerText) || 0;
-            const qtyOn = parseInt(document.getElementById(`online-${rowId}`).innerText) || 0;
-            const currentData = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
-            const sum = currentData.reduce((a, b) => a + b, 0);
-            
+            const data = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
+            const sum = data.reduce((a, b) => a + b, 0);
+            const target = parseInt(document.getElementById(currentView === 'offline' ? `offline-${rowId}` : `online-${rowId}`).innerText) || 0;
             document.getElementById(`total-${rowId}`).innerText = sum;
             document.getElementById(`stock-${rowId}`).innerText = sum;
-            
-            const target = currentView === 'offline' ? qtyOff : qtyOn;
             const sisa = target - sum;
             const sc = document.getElementById(`sisa-${rowId}`);
             sc.innerText = sisa;
             sc.className = `text-center font-bold ${sisa !== 0 ? 'bg-red-600 text-white' : 'bg-red-50 text-red-600'}`;
         }
 
-        function removeRow(rowId) { document.getElementById(`row-${rowId}`).remove(); delete rowDataStorage[rowId]; }
+        function removeRow(id) { document.getElementById(`row-${id}`).remove(); delete rowDataStorage[id]; }
 
         async function saveToGSheet() {
             const scriptUrl = document.getElementById('scriptUrl').value;
-            const targetSheet = currentView === 'offline' ? 'PARUNG' : 'MALATEK';
-            const rows = document.querySelectorAll('#tableBody tr');
-            const dataToSave = [];
+            // NAMA SHEET DINAMIS: PARUNG HEYMALE atau PARUNG HEYLOCAL
+            const targetSheet = (currentView === 'offline' ? 'PARUNG ' : 'MALATEK ') + currentBrand;
             
-            rows.forEach(tr => {
+            const rows = Array.from(document.querySelectorAll('#tableBody tr'));
+            const dataToSave = rows.map(tr => {
                 const rId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
                 const rowData = {
                     "timestamp": new Date().toLocaleString('id-ID'),
-                    "brand": inputs[0].value, 
-                    "kode_tag": inputs[1].value, 
-                    "sku_product": inputs[2].value, 
-                    "name_tag": inputs[3].value, 
-                    "kategori": inputs[4].value, 
-                    "size": inputs[5].value, 
-                    "price": inputs[6].value, 
-                    "color": inputs[7].value, 
-                    "qty_po": inputs[8].value, 
-                    "online": document.getElementById(`online-${rId}`).innerText, 
+                    "brand": currentBrand,
+                    "kode_tag": inputs[1].value,
+                    "sku_product": inputs[2].value,
+                    "name_tag": inputs[3].value,
+                    "kategori": inputs[4].value,
+                    "size": inputs[5].value,
+                    "price": inputs[6].value,
+                    "color": inputs[7].value,
+                    "qty_po": inputs[8].value,
+                    "online": document.getElementById(`online-${rId}`).innerText,
                     "offline": document.getElementById(`offline-${rId}`).innerText
                 };
-
-                config[currentBrand].stores.forEach((s, idx) => { 
-                    const val = (currentView === 'offline' ? rowDataStorage[rId].off[idx] : rowDataStorage[rId].on[idx]);
-                    rowData[s.name] = val; 
+                config[currentBrand].stores.forEach((s, i) => {
+                    rowData[s.name] = (currentView === 'offline' ? rowDataStorage[rId].off[i] : rowDataStorage[rId].on[i]);
                 });
-                dataToSave.push(rowData);
+                return rowData;
             });
 
             const btn = document.getElementById('saveBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<span class="loader"></span> Saving...`;
+            btn.disabled = true; btn.innerHTML = `<span class="loader"></span> Saving...`;
             try {
-                await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ brand: currentBrand, sheetName: targetSheet, data: dataToSave }) });
-                alert(`Data ${currentBrand.toUpperCase()} terkirim ke sheet ${targetSheet}!`);
-            } catch (error) { alert('Gagal kirim data.'); }
+                await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheetName: targetSheet, data: dataToSave }) });
+                alert(`Data berhasil terkirim ke sheet ${targetSheet}!`);
+            } catch (e) { alert('Gagal kirim data.'); }
             finally { btn.disabled = false; btn.innerText = `Simpan ke GSheet`; }
         }
 
-        window.onload = () => { initBrandMode(); };
+        window.onload = initBrandMode;
     </script>
 </body>
 </html>
