@@ -3,95 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heymale - Article Request System v5.6</title>
+    <title>Article Request System v6.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f2f5; color: #1e293b; }
-        .table-container { overflow-x: auto; max-height: 55vh; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-radius: 16px; background: white; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .table-container { overflow-x: auto; max-height: 65vh; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); border-radius: 12px; background: white; }
         table { border-collapse: separate; border-spacing: 0; width: 100%; }
         th { position: sticky; top: 0; z-index: 30; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; font-weight: 800; white-space: nowrap; }
-        .sticky-left { position: sticky; left: 0; z-index: 25; background-color: white; border-right: 2px solid #e2e8f0 !important; }
-        input, select { border: none; background: transparent; width: 100%; height: 100%; padding: 12px 10px; font-size: 13px; transition: all 0.2s; }
-        input:focus { outline: none; background-color: #f8fafc; box-shadow: inset 0 0 0 2px #3b82f6; }
+        .sticky-left { position: sticky; left: 0; z-index: 25; background-color: white; border-right: 1px solid #e2e8f0 !important; }
+        input, select { border: none; background: transparent; width: 100%; height: 100%; padding: 12px 10px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        input:focus { outline: none; background-color: #f1f5f9; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         td { border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 0; }
-        .btn-tab { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 3px solid transparent; }
+        .btn-tab { transition: all 0.3s ease; border-bottom: 3px solid transparent; color: #94a3b8; padding-bottom: 8px; }
         .btn-tab.active { border-bottom-color: #4f46e5; color: #4f46e5; }
-        .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #ffffff; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; }
+        .loader { border: 2px solid #f3f3f3; border-radius: 50%; border-top: 2px solid #ffffff; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .table-container::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-container::-webkit-scrollbar-track { background: #f1f5f9; }
+        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="p-4 lg:p-8">
+<body class="p-6 lg:p-8">
 
-    <header class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+    <header class="mb-8 flex flex-col lg:flex-row justify-between items-center gap-6">
         <div class="flex items-center gap-5">
-            <div class="bg-indigo-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-200">HM</div>
+            <div id="brand-logo" class="bg-indigo-600 text-white w-16 h-16 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-100 transition-colors">HM</div>
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">Article Request</h1>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-3xl font-extrabold tracking-tight text-slate-900" id="main-title">Article Request</h1>
+                    <select id="brandSelector" onchange="initBrandMode()" class="bg-slate-100 border-none rounded-lg px-3 py-1 text-xs font-bold text-slate-600 focus:ring-2 focus:ring-indigo-500 w-auto h-auto">
+                        <option value="heymale">HEYMALE</option>
+                        <option value="heylocal">HEYLOCAL</option>
+                    </select>
+                </div>
                 <div class="mt-1 flex items-center gap-3">
                     <input type="hidden" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwYZib3bj2WHHLZMlVmVhCF4Tlp9HgMSBXCDVx10ft37Ko7e9wZbb3-4lZsC1u_UqOV/exec">
-                    <p class="text-slate-500 text-xs font-semibold">Integrasi: PARUNG (Off) & MALATEK (On)</p>
+                    <p class="text-slate-500 text-sm font-medium" id="integration-label">Integrasi: PARUNG (Off) & MALATEK (On)</p>
                 </div>
             </div>
         </div>
         
-        <div class="flex flex-wrap gap-3">
-            <button onclick="addRow()" class="bg-white border-2 border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold hover:border-indigo-600 hover:text-indigo-600 transition-all">Tambah Baris</button>
-            <button id="saveBtn" onclick="saveToGSheet()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700">Simpan ke GSheet</button>
+        <div class="flex gap-4">
+            <button onclick="addRow()" class="bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-2xl text-sm font-bold hover:bg-slate-50 transition-all shadow-sm">Tambah Baris</button>
+            <button id="saveBtn" onclick="saveToGSheet()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">Simpan ke GSheet</button>
         </div>
     </header>
 
-    <nav class="flex gap-8 mb-4 border-b border-slate-200">
-        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Dashboard Offline (PARUNG)</button>
-        <button onclick="switchView('online')" id="tab-online" class="btn-tab pb-2 text-sm font-bold text-slate-400 uppercase tracking-tight">Request Online (MALATEK)</button>
+    <nav class="flex gap-10 mb-6 border-b border-slate-200">
+        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active text-sm font-bold uppercase tracking-wider">Dashboard Offline (PARUNG)</button>
+        <button onclick="switchView('online')" id="tab-online" class="btn-tab text-sm font-bold uppercase tracking-wider">Request Online (MALATEK)</button>
     </nav>
 
     <div class="table-container border border-slate-200">
         <table id="articleTable">
             <thead>
-                <tr class="bg-slate-900 text-white uppercase text-[9px] tracking-widest">
-                    <th colspan="8" class="px-4 py-4 sticky-left bg-slate-950">Info Artikel</th>
-                    <th class="bg-blue-600 px-2 py-4">PO</th>
-                    <th class="bg-indigo-700 px-2 py-4">ON (53%)</th>
-                    <th class="bg-amber-600 px-2 py-4">OFF (47%)</th>
-                    <th colspan="14" id="main-store-header" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest text-center text-[10px]">Alokasi Distribusi Store</th>
-                    <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th>
-                    <th class="bg-slate-950 no-print"></th>
+                <tr id="header-row-1" class="bg-[#0f172a] text-white uppercase text-[9px] tracking-widest">
+                    <!-- Dynamic Headers will be injected here -->
                 </tr>
-                <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200">
-                    <th class="px-4 py-3 sticky-left min-w-[100px]">Brand</th>
-                    <th class="px-4 py-3 min-w-[100px]">Kode Tag</th>
-                    <th class="px-4 py-3 min-w-[130px]">SKU</th>
-                    <th class="px-4 py-3 min-w-[180px]">Name Tag</th>
-                    <th class="px-4 py-3 min-w-[120px]">Kategori</th>
-                    <th class="px-4 py-3 min-w-[70px]">Size</th>
-                    <th class="px-4 py-3 min-w-[120px]">Price</th>
-                    <th class="px-4 py-3 min-w-[110px]">Color</th>
-                    <th class="px-4 py-3 bg-blue-50 text-blue-800">Qty PO</th>
-                    <th class="px-4 py-3 bg-indigo-50 text-indigo-800">Online</th>
-                    <th class="px-4 py-3 bg-amber-50 text-amber-800">Offline</th>
-                    
-                    <!-- Toko list -->
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600 border-l border-slate-200">Padang</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">S.Penuh</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Makassar</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Pekanbaru</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">BXC</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Aceh</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Puri</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Sun Plaza</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">PIM</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Palembang</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Paskal BDG</th>
-                    <th class="px-3 py-3 bg-slate-50 text-slate-600">Semarang</th>
-                    <th class="px-3 py-3 bg-slate-100 text-indigo-600">Muku Sby</th>
-                    <th class="px-3 py-3 bg-slate-100 text-indigo-600">Muku Blok M</th>
-                    
-                    <th class="px-4 py-3 bg-slate-100 text-slate-800 border-l border-slate-200">Total</th>
-                    <th class="px-4 py-3 bg-green-100 text-green-800">Stock</th>
-                    <th class="px-4 py-3 bg-red-100 text-red-800">Sisa</th>
-                    <th class="no-print"></th>
+                <tr id="header-row-2" class="bg-white text-slate-400 font-bold border-b border-slate-200 text-[10px]">
+                    <!-- Dynamic Sub-headers will be injected here -->
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -99,42 +71,130 @@
     </div>
 
     <script>
-        const stores = [
-            { name: "HEYMALE PADANG", rShirt: 11.62, rPants: 11.93, rJacket: 11.93, isMuku: false },
-            { name: "HEYMALE SUNGAI PENUH", rShirt: 10.95, rPants: 8.09, rJacket: 8.09, isMuku: false },
-            { name: "HEYMALE MAKASSAR", rShirt: 10.81, rPants: 11.18, rJacket: 10.31, isMuku: false },
-            { name: "HEYMALE PEKANBARU", rShirt: 10.17, rPants: 11.93, rJacket: 11.93, isMuku: false },
-            { name: "HEYMALE BXC", rShirt: 9.89, rPants: 10.83, rJacket: 10.83, isMuku: false },
-            { name: "HEYMALE ACEH", rShirt: 9.75, rPants: 8.78, rJacket: 8.78, isMuku: false },
-            { name: "HEYMALE PURI", rShirt: 9.47, rPants: 10.64, rJacket: 10.64, isMuku: false },
-            { name: "HEYMALE SUN PLAZA MEDAN", rShirt: 9.33, rPants: 9.69, rJacket: 9.69, isMuku: false },
-            { name: "HEYMALE PIM", rShirt: 8.99, rPants: 11.18, rJacket: 11.18, isMuku: false },
-            { name: "HEYMALE PALEMBANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
-            { name: "HEYMALE PASKAL BANDUNG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
-            { name: "HEYMALE SEMARANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
-            { name: "HEYMALE MUKU SURABAYA", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true },
-            { name: "HEYMALE MUKU BLOK M", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true }
-        ];
+        const config = {
+            heymale: {
+                ratioOn: 0.53,
+                ratioOff: 0.47,
+                categories: ["SHIRT", "PANTS", "JACKET"],
+                stores: [
+                    { name: "HEYMALE PADANG", rShirt: 11.62, rPants: 11.93, rJacket: 11.93, isMuku: false },
+                    { name: "HEYMALE SUNGAI PENUH", rShirt: 10.95, rPants: 8.09, rJacket: 8.09, isMuku: false },
+                    { name: "HEYMALE MAKASSAR", rShirt: 10.81, rPants: 11.18, rJacket: 10.31, isMuku: false },
+                    { name: "HEYMALE PEKANBARU", rShirt: 10.17, rPants: 11.93, rJacket: 11.93, isMuku: false },
+                    { name: "HEYMALE BXC", rShirt: 9.89, rPants: 10.83, rJacket: 10.83, isMuku: false },
+                    { name: "HEYMALE ACEH", rShirt: 9.75, rPants: 8.78, rJacket: 8.78, isMuku: false },
+                    { name: "HEYMALE PURI", rShirt: 9.47, rPants: 10.64, rJacket: 10.64, isMuku: false },
+                    { name: "HEYMALE SUN PLAZA MEDAN", rShirt: 9.33, rPants: 9.69, rJacket: 9.69, isMuku: false },
+                    { name: "HEYMALE PIM", rShirt: 8.99, rPants: 11.18, rJacket: 11.18, isMuku: false },
+                    { name: "HEYMALE PALEMBANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
+                    { name: "HEYMALE PASKAL BANDUNG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
+                    { name: "HEYMALE SEMARANG", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: false },
+                    { name: "HEYMALE MUKU SURABAYA", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true },
+                    { name: "HEYMALE MUKU BLOK M", rShirt: 8.99, rPants: 8.09, rJacket: 8.09, isMuku: true }
+                ]
+            },
+            heylocal: {
+                ratioOn: 0.5383,
+                ratioOff: 0.4617,
+                categories: ["SCARF", "SHIRT", "PANTS"],
+                stores: [
+                    { name: "HEYLOCAL ACEH", ratio: 7.98 },
+                    { name: "HEYLOCAL BALIKPAPAN", ratio: 5.59 },
+                    { name: "HEYLOCAL BXC DEAL POS", ratio: 6.78 },
+                    { name: "HEYLOCAL MAKASSAR", ratio: 4.79 },
+                    { name: "HEYLOCAL MEDAN OCBC", ratio: 4.19 },
+                    { name: "HEYLOCAL PADANG", ratio: 8.78 },
+                    { name: "HEYLOCAL PAKUWON MALL BEKASI", ratio: 4.79 },
+                    { name: "HEYLOCAL PALEMBANG", ratio: 6.98 },
+                    { name: "HEYLOCAL PEJATEN", ratio: 4.79 },
+                    { name: "HEYLOCAL PEKANBARU", ratio: 5.39 },
+                    { name: "HEYLOCAL SAMARINDA", ratio: 4.79 },
+                    { name: "HEYLOCAL SENTUL", ratio: 4.39 },
+                    { name: "HEYLOCAL SUMABA", ratio: 4.39 },
+                    { name: "HEYLOCAL SUMMARECON MALL BEKASI", ratio: 3.79 },
+                    { name: "HEYLOCAL SUNGAI PENUH", ratio: 3.59 },
+                    { name: "HEYLOCAL SUNPLAZA MEDAN", ratio: 4.79 },
+                    { name: "HSC PIM", ratio: 5.59 },
+                    { name: "HEYLOCAL WH SURABAYA", ratio: 4.79 },
+                    { name: "HEYLOCAL LAMPUNG", ratio: 3.85 }
+                ]
+            }
+        };
 
+        let currentBrand = 'heymale';
         let currentView = 'offline';
         let rowDataStorage = {}; 
 
+        function initBrandMode() {
+            currentBrand = document.getElementById('brandSelector').value;
+            const logo = document.getElementById('brand-logo');
+            
+            if (currentBrand === 'heylocal') {
+                logo.innerText = 'HL';
+                logo.className = 'bg-rose-600 text-white w-16 h-16 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-rose-100 transition-colors';
+            } else {
+                logo.innerText = 'HM';
+                logo.className = 'bg-indigo-600 text-white w-16 h-16 flex items-center justify-center rounded-2xl font-black text-2xl shadow-xl shadow-indigo-100 transition-colors';
+            }
+
+            renderHeaders();
+            document.getElementById('tableBody').innerHTML = '';
+            rowDataStorage = {};
+            for(let i=0; i<5; i++) addRow();
+            switchView(currentView);
+        }
+
+        function renderHeaders() {
+            const brandData = config[currentBrand];
+            const storesList = brandData.stores;
+            const h1 = document.getElementById('header-row-1');
+            const h2 = document.getElementById('header-row-2');
+            
+            // Header Row 1
+            let html1 = `<th colspan="8" class="px-4 py-4 sticky-left bg-[#0f172a]">Info Artikel</th>
+                         <th class="bg-[#3b82f6] px-2 py-4">PO</th>
+                         <th class="bg-[#4f46e5] px-2 py-4">ON (${(brandData.ratioOn*100).toFixed(1)}%)</th>
+                         <th class="bg-[#ea580c] px-2 py-4">OFF (${(brandData.ratioOff*100).toFixed(1)}%)</th>
+                         <th colspan="${storesList.length}" id="main-store-header" class="bg-[#059669] px-4 py-4 border-l border-emerald-800 tracking-widest text-center">Dashboard Store</th>
+                         <th colspan="3" class="bg-[#1e293b] px-2 py-4">Verifikasi</th><th></th>`;
+            h1.innerHTML = html1;
+
+            // Header Row 2
+            let html2 = `<th class="px-4 py-3 sticky-left min-w-[110px] text-slate-500">BRAND</th>
+                         <th class="px-4 py-3 min-w-[100px] text-slate-500">KODE TAG</th>
+                         <th class="px-4 py-3 min-w-[130px] text-slate-500">SKU</th>
+                         <th class="px-4 py-3 min-w-[180px] text-slate-500">NAME TAG</th>
+                         <th class="px-4 py-3 min-w-[120px] text-slate-500">KATEGORI</th>
+                         <th class="px-4 py-3 min-w-[70px] text-slate-500">SIZE</th>
+                         <th class="px-4 py-3 min-w-[110px] text-slate-500">PRICE</th>
+                         <th class="px-4 py-3 min-w-[100px] text-slate-500">COLOR</th>
+                         <th class="px-4 py-3 bg-blue-50 text-blue-700">QTY PO</th>
+                         <th class="px-4 py-3 bg-indigo-50 text-indigo-700">ONLINE</th>
+                         <th class="px-4 py-3 bg-orange-50 text-orange-700">OFFLINE</th>`;
+            
+            storesList.forEach(s => {
+                const shortName = s.name.replace('HEYMALE ', '').replace('HEYLOCAL ', '');
+                html2 += `<th class="px-2 py-3 bg-slate-50 text-slate-600 border-l border-slate-200 text-[9px] min-w-[80px]">${shortName}</th>`;
+            });
+
+            html2 += `<th class="px-4 py-3 bg-slate-100 text-slate-800 border-l border-slate-200">TOTAL</th>
+                      <th class="px-4 py-3 bg-green-50 text-green-700">STOCK</th>
+                      <th class="px-4 py-3 bg-red-50 text-red-700">SISA</th><th></th>`;
+            h2.innerHTML = html2;
+        }
+
         function switchView(view) {
             currentView = view;
-            const tabOffline = document.getElementById('tab-offline');
-            const tabOnline = document.getElementById('tab-online');
+            document.getElementById('tab-offline').classList.toggle('active', view === 'offline');
+            document.getElementById('tab-online').classList.toggle('active', view === 'online');
+            
             const mainHeader = document.getElementById('main-store-header');
-
             if (view === 'offline') {
-                tabOffline.classList.add('active');
-                tabOnline.classList.remove('active');
                 mainHeader.innerText = "DASHBOARD OFFLINE (PARUNG)";
-                mainHeader.className = "bg-emerald-700 px-4 py-4 border-l border-emerald-800 tracking-widest text-center text-[10px]";
+                mainHeader.className = "bg-[#059669] px-4 py-4 border-l border-emerald-800 tracking-widest text-center";
             } else {
-                tabOffline.classList.remove('active');
-                tabOnline.classList.add('active');
                 mainHeader.innerText = "REQUEST ONLINE (MALATEK)";
-                mainHeader.className = "bg-blue-700 px-4 py-4 border-l border-blue-800 tracking-widest text-center text-[10px]";
+                mainHeader.className = "bg-[#4f46e5] px-4 py-4 border-l border-indigo-800 tracking-widest text-center";
             }
             Object.keys(rowDataStorage).forEach(rowId => refreshRowUI(rowId));
         }
@@ -144,49 +204,93 @@
             const rowId = Math.random().toString(36).substr(2, 9);
             const tr = document.createElement('tr');
             tr.id = `row-${rowId}`;
-            tr.className = "row-hover transition-colors";
-            rowDataStorage[rowId] = { off: new Array(14).fill(0), on: new Array(14).fill(0) };
+            tr.className = "hover:bg-slate-50 transition-colors";
+            
+            const brandData = config[currentBrand];
+            rowDataStorage[rowId] = { off: new Array(brandData.stores.length).fill(0), on: new Array(brandData.stores.length).fill(0) };
+            
             let storeCells = "";
-            stores.forEach((store, index) => {
-                storeCells += `<td class="store-cell"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}', ${index})" class="text-center font-bold text-slate-800" value="0"></td>`;
+            brandData.stores.forEach((store, index) => {
+                storeCells += `<td class="store-cell"><input type="number" id="store-${index}-${rowId}" oninput="updateManual('${rowId}', ${index})" class="text-center font-bold text-slate-700" value="0"></td>`;
             });
-            tr.innerHTML = `<td class="sticky-left"><input type="text" value="HEYMALE" class="font-bold text-indigo-600"></td><td class="col-product"><input type="text" placeholder="KODE"></td><td class="col-product"><input type="text" placeholder="SKU"></td><td class="col-product"><input type="text" placeholder="NAMA ARTIKEL"></td><td class="col-product"><select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold text-slate-700 uppercase"><option value="SHIRT">SHIRT</option><option value="PANTS">PANTS</option><option value="JACKET">JACKET</option></select></td><td class="col-product"><input type="text" placeholder="ALL" class="text-center font-bold"></td><td class="col-product"><input type="number" placeholder="0"></td><td class="col-product"><input type="text" placeholder="WARNA"></td><td class="bg-blue-50/50"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-base" placeholder="0"></td><td class="col-distribution text-center text-indigo-700 font-bold" id="online-${rowId}">0</td><td class="col-distribution text-center text-amber-700 font-bold" id="offline-${rowId}">0</td>${storeCells}<td class="col-results text-center" id="total-${rowId}">0</td><td class="col-results text-center text-green-600 bg-green-50" id="stock-${rowId}">0</td><td class="col-results text-center text-red-600 bg-red-50" id="sisa-${rowId}">0</td><td class="no-print text-center px-2"><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 transition-colors font-bold text-xl">×</button></td>`;
+
+            const catOptions = brandData.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            tr.innerHTML = `
+                <td class="sticky-left"><input type="text" value="${currentBrand.toUpperCase()}" class="font-bold ${currentBrand === 'heymale' ? 'text-indigo-600' : 'text-rose-600'}"></td>
+                <td><input type="text" placeholder="KODE"></td>
+                <td><input type="text" placeholder="SKU"></td>
+                <td><input type="text" placeholder="NAMA ARTIKEL"></td>
+                <td><select onchange="calculateRow('${rowId}')" id="cat-${rowId}" class="font-bold text-slate-700 uppercase">${catOptions}</select></td>
+                <td><input type="text" placeholder="S" class="text-center font-bold"></td>
+                <td><input type="number" placeholder="0" class="text-center"></td>
+                <td><input type="text" placeholder="WARNA"></td>
+                <td class="bg-blue-50/30"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center text-base" placeholder="0"></td>
+                <td class="text-center text-indigo-700 font-bold" id="online-${rowId}">0</td>
+                <td class="text-center text-orange-700 font-bold" id="offline-${rowId}">0</td>
+                ${storeCells}
+                <td class="text-center font-bold text-slate-800 border-l border-slate-200" id="total-${rowId}">0</td>
+                <td class="text-center text-green-600 font-bold bg-green-50/50" id="stock-${rowId}">0</td>
+                <td class="text-center text-red-600 font-bold bg-red-50/50" id="sisa-${rowId}">0</td>
+                <td class="text-center px-2"><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 font-bold text-xl">×</button></td>
+            `;
             tbody.appendChild(tr);
         }
 
         function calculateRow(rowId) {
+            const brandData = config[currentBrand];
             const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
             const category = document.getElementById(`cat-${rowId}`).value;
-            const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
-            const qtyOnline = Math.round(qtyPo * 0.53);
+            
+            const qtyOnline = Math.round(qtyPo * brandData.ratioOn);
             const qtyOffline = qtyPo - qtyOnline;
+            
             document.getElementById(`online-${rowId}`).innerText = qtyOnline;
             document.getElementById(`offline-${rowId}`).innerText = qtyOffline;
 
-            const regularStores = stores.filter(s => !s.isMuku);
-            const regRatioSum = regularStores.reduce((sum, s) => sum + s[ratioKey], 0);
-            
-            let offResults = new Array(14).fill(0);
-            let distributedOffline = 0;
-            regularStores.forEach(s => {
-                const sIdx = stores.findIndex(st => st.name === s.name);
-                const share = Math.floor(qtyOffline * (s[ratioKey] / regRatioSum));
-                offResults[sIdx] = share;
-                distributedOffline += share;
-            });
-            let remOff = qtyOffline - distributedOffline;
-            let j = 0;
-            while(remOff > 0) {
-                const sIdx = stores.findIndex(st => st.name === regularStores[j % regularStores.length].name);
-                offResults[sIdx]++;
-                remOff--;
-                j++;
+            let offResults = new Array(brandData.stores.length).fill(0);
+            let onResults = new Array(brandData.stores.length).fill(0);
+
+            if (currentBrand === 'heymale') {
+                const ratioKey = category === 'SHIRT' ? 'rShirt' : (category === 'PANTS' ? 'rPants' : 'rJacket');
+                const regularStores = brandData.stores.filter(s => !s.isMuku);
+                const regRatioSum = regularStores.reduce((sum, s) => sum + s[ratioKey], 0);
+                
+                let distributedOffline = 0;
+                regularStores.forEach(s => {
+                    const sIdx = brandData.stores.findIndex(st => st.name === s.name);
+                    const share = Math.floor(qtyOffline * (s[ratioKey] / regRatioSum));
+                    offResults[sIdx] = share;
+                    distributedOffline += share;
+                });
+                let remOff = qtyOffline - distributedOffline;
+                let j = 0;
+                while(remOff > 0) {
+                    const sIdx = brandData.stores.findIndex(st => st.name === regularStores[j % regularStores.length].name);
+                    offResults[sIdx]++; remOff--; j++;
+                }
+                brandData.stores.forEach((s, idx) => {
+                    if (s.isMuku) onResults[idx] = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum));
+                });
+            } else {
+                // Heylocal Logic
+                let distributedOffline = 0;
+                brandData.stores.forEach((s, idx) => {
+                    const share = Math.floor(qtyOffline * (s.ratio / 100));
+                    offResults[idx] = share;
+                    distributedOffline += share;
+                });
+                let remOff = qtyOffline - distributedOffline;
+                let j = 0;
+                while(remOff > 0) {
+                    offResults[j % brandData.stores.length]++; remOff--; j++;
+                }
+                // Heylocal Online usually follows similar pattern or simple split
+                brandData.stores.forEach((s, idx) => {
+                    onResults[idx] = Math.floor(qtyOnline * (s.ratio / 100));
+                });
             }
-            let onResults = new Array(14).fill(0);
-            stores.forEach((s, idx) => {
-                if (s.isMuku) onResults[idx] = Math.round(qtyPo * 0.47 * (s[ratioKey] / regRatioSum));
-                else onResults[idx] = 0; 
-            });
+            
             rowDataStorage[rowId].off = offResults;
             rowDataStorage[rowId].on = onResults;
             refreshRowUI(rowId);
@@ -203,9 +307,14 @@
             const currentData = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
             currentData.forEach((val, idx) => {
                 const input = document.getElementById(`store-${idx}-${rowId}`);
-                input.value = val;
-                if (currentView === 'online' && !stores[idx].isMuku) input.classList.add('text-slate-300');
-                else input.classList.remove('text-slate-300');
+                if (input) {
+                    input.value = val;
+                    if (currentBrand === 'heymale' && currentView === 'online' && !config.heymale.stores[idx].isMuku) {
+                        input.classList.add('text-slate-300');
+                    } else {
+                        input.classList.remove('text-slate-300');
+                    }
+                }
             });
             updateTotals(rowId);
         }
@@ -215,16 +324,18 @@
             const qtyOn = parseInt(document.getElementById(`online-${rowId}`).innerText) || 0;
             const currentData = currentView === 'offline' ? rowDataStorage[rowId].off : rowDataStorage[rowId].on;
             const sum = currentData.reduce((a, b) => a + b, 0);
+            
             document.getElementById(`total-${rowId}`).innerText = sum;
             document.getElementById(`stock-${rowId}`).innerText = sum;
+            
             const target = currentView === 'offline' ? qtyOff : qtyOn;
             const sisa = target - sum;
             const sc = document.getElementById(`sisa-${rowId}`);
             sc.innerText = sisa;
-            sc.className = currentView === 'offline' ? (sisa !== 0 ? "bg-red-600 text-white font-bold text-center" : "bg-red-50 text-red-600 text-center") : "bg-blue-50 text-blue-600 text-center font-bold";
+            sc.className = `text-center font-bold ${sisa !== 0 ? 'bg-red-600 text-white' : 'bg-red-50 text-red-600'}`;
         }
 
-        function removeRow(rowId) { if(confirm('Hapus baris?')) { document.getElementById(`row-${rowId}`).remove(); delete rowDataStorage[rowId]; } }
+        function removeRow(rowId) { document.getElementById(`row-${rowId}`).remove(); delete rowDataStorage[rowId]; }
 
         async function saveToGSheet() {
             const scriptUrl = document.getElementById('scriptUrl').value;
@@ -235,8 +346,6 @@
             rows.forEach(tr => {
                 const rId = tr.id.split('-')[1];
                 const inputs = tr.querySelectorAll('input, select');
-                
-                // Timestamp dipindah ke paling kiri (properti pertama dalam objek)
                 const rowData = {
                     "timestamp": new Date().toLocaleString('id-ID'),
                     "brand": inputs[0].value, 
@@ -252,10 +361,8 @@
                     "offline": document.getElementById(`offline-${rId}`).innerText
                 };
 
-                // Memasukkan data store dengan key nama asli warehouse
-                stores.forEach((s, idx) => { 
+                config[currentBrand].stores.forEach((s, idx) => { 
                     const val = (currentView === 'offline' ? rowDataStorage[rId].off[idx] : rowDataStorage[rId].on[idx]);
-                    // Pastikan mengirim sebagai number, tapi di GSheet sudah dipaksa text format
                     rowData[s.name] = val; 
                 });
                 dataToSave.push(rowData);
@@ -265,13 +372,13 @@
             btn.disabled = true;
             btn.innerHTML = `<span class="loader"></span> Saving...`;
             try {
-                await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ sheetName: targetSheet, data: dataToSave }) });
-                alert(`Data terkirim ke sheet ${targetSheet}!`);
+                await fetch(scriptUrl, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ brand: currentBrand, sheetName: targetSheet, data: dataToSave }) });
+                alert(`Data ${currentBrand.toUpperCase()} terkirim ke sheet ${targetSheet}!`);
             } catch (error) { alert('Gagal kirim data.'); }
             finally { btn.disabled = false; btn.innerText = `Simpan ke GSheet`; }
         }
 
-        window.onload = () => { for(let i=0; i<5; i++) addRow(); };
+        window.onload = () => { initBrandMode(); };
     </script>
 </body>
 </html>
