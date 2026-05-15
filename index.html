@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Article Request System v8.5</title>
+    <title>Article Request System v8.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .table-container { overflow-x: auto; max-height: 65vh; border-radius: 16px; background: white; }
+        .table-container { overflow-x: auto; max-height: 65vh; border-radius: 16px; background: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         table { border-collapse: separate; border-spacing: 0; width: 100%; }
         th { position: sticky; top: 0; z-index: 30; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; font-weight: 800; white-space: nowrap; }
         .sticky-left { position: sticky; left: 0; z-index: 25; background-color: white; border-right: 1px solid #e2e8f0 !important; }
         input, select { border: none; background: transparent; width: 100%; height: 100%; padding: 12px 10px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
         input:focus { outline: none; background-color: #f1f5f9; }
         td { border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 0; }
-        .btn-tab { transition: all 0.3s ease; border-bottom: 3px solid transparent; color: #94a3b8; }
+        .btn-tab { transition: all 0.3s ease; border-bottom: 3px solid transparent; color: #94a3b8; padding-bottom: 8px; font-weight: 700; }
         .btn-tab.active { border-bottom-color: #4f46e5; color: #4f46e5; }
         .loader { border: 2px solid #f3f3f3; border-radius: 50%; border-top: 2px solid #ffffff; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="p-4 lg:p-8">
+<body class="p-6 lg:p-8">
 
     <header class="mb-8 flex flex-col lg:flex-row justify-between items-center gap-6">
         <div class="flex items-center gap-5">
@@ -34,7 +34,7 @@
                         <option value="HEYLOCAL">HEYLOCAL</option>
                     </select>
                 </div>
-                <p class="text-slate-500 text-xs font-medium">Integrasi: Cloud Sync Active</p>
+                <p class="text-slate-500 text-xs font-medium">Integrasi: Cloud Sync Active (v8.6)</p>
             </div>
         </div>
         
@@ -45,12 +45,12 @@
     </header>
 
     <nav class="flex gap-8 mb-6 border-b border-slate-200">
-        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active pb-2 text-sm font-bold uppercase">Dashboard Offline (PARUNG)</button>
-        <button onclick="switchView('online')" id="tab-online" class="btn-tab pb-2 text-sm font-bold uppercase">Request Online (MALATEK)</button>
+        <button onclick="switchView('offline')" id="tab-offline" class="btn-tab active uppercase">Dashboard Offline (PARUNG)</button>
+        <button onclick="switchView('online')" id="tab-online" class="btn-tab uppercase">Request Online (MALATEK)</button>
     </nav>
 
-    <div class="table-container border border-slate-200 shadow-sm">
-        <!-- Input URL Script Anda di sini -->
+    <div class="table-container border border-slate-200">
+        <!-- MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI -->
         <input type="hidden" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwYZib3bj2WHHLZMlVmVhCF4Tlp9HgMSBXCDVx10ft37Ko7e9wZbb3-4lZsC1u_UqOV/exec">
         
         <table id="articleTable">
@@ -73,7 +73,7 @@
                     { name: "HEYMALE PURI", r: 9.47 }, { name: "HEYMALE SUN PLAZA MEDAN", r: 9.33 },
                     { name: "HEYMALE PIM", r: 8.99 }, { name: "HEYMALE PALEMBANG", r: 8.99 },
                     { name: "HEYMALE PASKAL BANDUNG", r: 8.99 }, { name: "HEYMALE SEMARANG", r: 8.99 },
-                    { name: "HEYMALE MUKU SURABAYA", r: 8.99, isMuku: true }, { name: "HEYMALE MUKU BLOK M", r: 8.99, isMuku: true }
+                    { name: "HEYMALE MUKU SURABAYA", r: 8.99 }, { name: "HEYMALE MUKU BLOK M", r: 8.99 }
                 ]
             },
             HEYLOCAL: {
@@ -114,18 +114,18 @@
             const h1 = document.getElementById('header-row-1');
             const h2 = document.getElementById('header-row-2');
             
-            h1.innerHTML = `<th colspan="8" class="px-4 py-4 sticky-left bg-slate-950">Info Artikel</th>
+            h1.innerHTML = `<th colspan="8" class="px-4 py-4 sticky-left bg-slate-950 text-center">Info Artikel</th>
                             <th class="bg-blue-600 px-2 py-4">PO</th>
                             <th class="bg-indigo-700 px-2 py-4">ON (${(config[currentBrand].ratioOn*100).toFixed(1)}%)</th>
                             <th class="bg-orange-600 px-2 py-4">OFF (${(config[currentBrand].ratioOff*100).toFixed(1)}%)</th>
-                            <th colspan="${stores.length}" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 text-center">Dashboard Distribusi</th>
-                            <th colspan="3" class="bg-slate-800 px-2 py-4">Verifikasi</th><th></th>`;
+                            <th colspan="${stores.length}" class="bg-emerald-700 px-4 py-4 border-l border-emerald-800 text-center">Dashboard Distribusi Store</th>
+                            <th colspan="3" class="bg-slate-800 px-2 py-4 text-center">Verifikasi</th><th></th>`;
 
-            let html2 = `<th class="px-4 py-3 sticky-left min-w-[100px]">Brand</th><th class="px-4 py-3 min-w-[100px]">Kode</th><th class="px-4 py-3 min-w-[130px]">SKU</th><th class="px-4 py-3 min-w-[180px]">Nama</th><th class="px-4 py-3 min-w-[120px]">Kategori</th><th class="px-4 py-3 min-w-[70px]">Size</th><th class="px-4 py-3 min-w-[110px]">Price</th><th class="px-4 py-3 min-w-[100px]">Color</th><th class="px-4 py-3 bg-blue-50 text-blue-800">PO</th><th class="px-4 py-3 bg-indigo-50 text-indigo-800">ON</th><th class="px-4 py-3 bg-orange-50 text-orange-800">OFF</th>`;
+            let html2 = `<th class="px-4 py-3 sticky-left min-w-[100px]">Brand</th><th class="px-4 py-3 min-w-[100px]">Kode Tag</th><th class="px-4 py-3 min-w-[130px]">SKU</th><th class="px-4 py-3 min-w-[180px]">Name Tag</th><th class="px-4 py-3 min-w-[120px]">Kategori</th><th class="px-4 py-3 min-w-[70px]">Size</th><th class="px-4 py-3 min-w-[110px]">Price</th><th class="px-4 py-3 min-w-[100px]">Color</th><th class="px-4 py-3 bg-blue-50 text-blue-800">Qty PO</th><th class="px-4 py-3 bg-indigo-50 text-indigo-800">Online</th><th class="px-4 py-3 bg-orange-50 text-orange-800">Offline</th>`;
             stores.forEach(s => {
                 html2 += `<th class="px-2 py-3 bg-slate-50 text-slate-600 border-l border-slate-200 text-[9px] min-w-[80px]">${s.name.replace(currentBrand + ' ', '')}</th>`;
             });
-            html2 += `<th class="px-4 py-3 bg-slate-100 text-slate-800 border-l border-slate-200">TOTAL</th><th class="px-4 py-3 bg-green-50 text-green-700">STOCK</th><th class="px-4 py-3 bg-red-50 text-red-700">SISA</th><th></th>`;
+            html2 += `<th class="px-4 py-3 bg-slate-100 text-slate-800 border-l border-slate-200">Total</th><th class="px-4 py-3 bg-green-50 text-green-700">Stock</th><th class="px-4 py-3 bg-red-50 text-red-700">Sisa</th><th></th>`;
             h2.innerHTML = html2;
         }
 
@@ -150,7 +150,7 @@
 
             const catOptions = (currentBrand === 'HEYLOCAL' ? ['SCARF', 'SHIRT', 'PANTS'] : ['SHIRT', 'PANTS', 'JACKET']).map(c => `<option value="${c}">${c}</option>`).join('');
 
-            tr.innerHTML = `<td class="sticky-left"><input type="text" value="${currentBrand}" class="font-bold"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><select onchange="calculateRow('${rowId}')" id="cat-${rowId}">${catOptions}</select></td><td><input type="text" class="text-center"></td><td><input type="number"></td><td><input type="text"></td><td class="bg-blue-50/30"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center"></td><td id="online-${rowId}" class="text-center font-bold text-indigo-700">0</td><td id="offline-${rowId}" class="text-center font-bold text-orange-700">0</td>${storeCells}<td id="total-${rowId}" class="text-center font-bold">0</td><td id="stock-${rowId}" class="text-center text-green-600 font-bold bg-green-50">0</td><td id="sisa-${rowId}" class="text-center text-red-600 font-bold bg-red-50">0</td><td><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 font-bold">×</button></td>`;
+            tr.innerHTML = `<td class="sticky-left"><input type="text" value="${currentBrand}" class="font-bold"></td><td><input type="text" placeholder="KODE"></td><td><input type="text" placeholder="SKU"></td><td><input type="text" placeholder="NAMA"></td><td><select onchange="calculateRow('${rowId}')" id="cat-${rowId}">${catOptions}</select></td><td><input type="text" class="text-center"></td><td><input type="number"></td><td><input type="text"></td><td class="bg-blue-50/30"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center"></td><td id="online-${rowId}" class="text-center font-bold text-indigo-700">0</td><td id="offline-${rowId}" class="text-center font-bold text-orange-700">0</td>${storeCells}<td id="total-${rowId}" class="text-center font-bold">0</td><td id="stock-${rowId}" class="text-center text-green-600 font-bold bg-green-50">0</td><td id="sisa-${rowId}" class="text-center text-red-600 font-bold bg-red-50">0</td><td><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 font-bold text-xl">×</button></td>`;
             document.getElementById('tableBody').appendChild(tr);
         }
 
@@ -163,12 +163,25 @@
             document.getElementById(`online-${rowId}`).innerText = qtyOn;
             document.getElementById(`offline-${rowId}`).innerText = qtyOff;
 
+            const totalRatio = brandData.stores.reduce((sum, s) => sum + s.r, 0);
             let offResults = new Array(brandData.stores.length).fill(0);
-            let onResults = new Array(brandData.stores.length).fill(0);
+            let distributed = 0;
             
+            // Perhitungan Proporsional untuk semua store termasuk MUKU
             brandData.stores.forEach((s, i) => {
-                offResults[i] = Math.floor(qtyOff * (s.r / 100));
+                const share = Math.floor(qtyOff * (s.r / totalRatio));
+                offResults[i] = share;
+                distributed += share;
             });
+
+            // Bagi Sisa (Remainders)
+            let rem = qtyOff - distributed;
+            let idx = 0;
+            while(rem > 0) {
+                offResults[idx % brandData.stores.length]++;
+                rem--;
+                idx++;
+            }
 
             rowDataStorage[rowId].off = offResults;
             refreshRowUI(rowId);
@@ -199,39 +212,40 @@
             const targetOffOriginal = parseInt(document.getElementById(`offline-${rowId}`).innerText) || 0;
             const targetOnOriginal = parseInt(document.getElementById(`online-${rowId}`).innerText) || 0;
 
-            // LOGIKA BORROWING: Jika offline melebihi target, kurangi jatah online
+            // LOGIKA BORROWING: Jika offline berlebih, ambil dari jatah online
             let sisaOff = targetOffOriginal - offSum;
-            let targetOnEffective = targetOnOriginal;
+            let effectiveOnTarget = targetOnOriginal;
             
             if (sisaOff < 0) {
-                // Meminjam dari online
-                targetOnEffective = targetOnOriginal + sisaOff; // sisaOff negatif, jadi berkurang
+                effectiveOnTarget = targetOnOriginal + sisaOff; // SisaOff negatif berarti jatah On berkurang
             }
 
-            let sisaOn = targetOnEffective - onSum;
+            let sisaOn = effectiveOnTarget - onSum;
 
-            // Tampilkan Sesuai Tab
             if (currentView === 'offline') {
                 document.getElementById(`total-${rowId}`).innerText = offSum;
                 document.getElementById(`stock-${rowId}`).innerText = offSum;
                 const sc = document.getElementById(`sisa-${rowId}`);
                 sc.innerText = sisaOff;
-                sc.className = `text-center font-bold ${sisaOff < 0 ? 'bg-orange-500 text-white' : (sisaOff === 0 ? 'bg-red-50 text-red-600' : 'bg-red-50 text-red-600')}`;
-                // Jika negatif, kita beri warna orange sebagai tanda "Pindah ke Online"
+                // Jika negatif, warnai Orange untuk tanda peminjaman dari Online
+                sc.className = `text-center font-bold ${sisaOff < 0 ? 'bg-orange-500 text-white rounded' : (sisaOff === 0 ? 'bg-red-50 text-red-600' : 'bg-red-50 text-red-600')}`;
             } else {
                 document.getElementById(`total-${rowId}`).innerText = onSum;
                 document.getElementById(`stock-${rowId}`).innerText = onSum;
                 const sc = document.getElementById(`sisa-${rowId}`);
                 sc.innerText = sisaOn;
-                sc.className = `text-center font-bold ${sisaOn !== 0 ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600'}`;
+                sc.className = `text-center font-bold ${sisaOn !== 0 ? 'bg-indigo-600 text-white rounded' : 'bg-blue-50 text-blue-600'}`;
             }
         }
 
         function removeRow(id) { document.getElementById(`row-${id}`).remove(); delete rowDataStorage[id]; }
 
         async function saveToGSheet() {
-            const scriptUrl = document.getElementById('scriptUrl').value;
-            if(!scriptUrl) { alert("Script URL belum diisi!"); return; }
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
+            if(!scriptUrl || scriptUrl.includes("AKfycbwYZib...")) { 
+                alert("⚠️ Error: Masukkan URL Google Apps Script yang valid di kolom hidden scriptUrl!"); 
+                return; 
+            }
 
             const targetSheet = (currentView === 'offline' ? 'PARUNG ' : 'MALATEK ') + currentBrand;
             const rows = Array.from(document.querySelectorAll('#tableBody tr'));
@@ -258,22 +272,21 @@
                 return rowData;
             });
 
+            if(dataToSave.length === 0) return;
+
             const btn = document.getElementById('saveBtn');
             btn.disabled = true; btn.innerHTML = `<span class="loader"></span> Saving...`;
             
             try {
-                // Mengirim dengan POST dan payload JSON
-                const response = await fetch(scriptUrl, {
+                // Gunakan mode no-cors untuk Web App GAS
+                await fetch(scriptUrl, {
                     method: 'POST',
-                    mode: 'no-cors', // Penting untuk Web App GAS
-                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'no-cors',
                     body: JSON.stringify({ sheetName: targetSheet, data: dataToSave })
                 });
-                
-                // Karena no-cors, kita tidak bisa baca response, tapi kita beri feedback sukses
-                alert(`Data berhasil dikirim ke sheet ${targetSheet}! Periksa spreadsheet Anda.`);
+                alert(`✅ Data berhasil terkirim ke sheet ${targetSheet}! Silakan periksa spreadsheet.`);
             } catch (e) { 
-                alert('Gagal mengirim data: ' + e.message); 
+                alert('Gagal mengirim data. Pastikan URL Script benar dan sudah di-deploy sebagai Anyone.'); 
             } finally { 
                 btn.disabled = false; btn.innerText = `Simpan ke GSheet`; 
             }
