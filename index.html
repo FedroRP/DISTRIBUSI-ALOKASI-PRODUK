@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Article Request System v8.6</title>
+    <title>Article Request System v8.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -34,7 +34,7 @@
                         <option value="HEYLOCAL">HEYLOCAL</option>
                     </select>
                 </div>
-                <p class="text-slate-500 text-xs font-medium">Integrasi: Cloud Sync Active (v8.6)</p>
+                <p class="text-slate-500 text-xs font-medium">Integrasi: Cloud Sync Active (v8.8)</p>
             </div>
         </div>
         
@@ -50,7 +50,6 @@
     </nav>
 
     <div class="table-container border border-slate-200">
-        <!-- MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI -->
         <input type="hidden" id="scriptUrl" value="https://script.google.com/macros/s/AKfycbwYZib3bj2WHHLZMlVmVhCF4Tlp9HgMSBXCDVx10ft37Ko7e9wZbb3-4lZsC1u_UqOV/exec">
         
         <table id="articleTable">
@@ -78,6 +77,7 @@
             },
             HEYLOCAL: {
                 ratioOn: 0.5383, ratioOff: 0.4617,
+                // Rasio Default (Scarf/Shirt/Pants)
                 stores: [
                     { name: "HEYLOCAL ACEH", r: 7.98 }, { name: "HEYLOCAL BALIKPAPAN", r: 5.59 },
                     { name: "HEYLOCAL BXC", r: 6.78 }, { name: "HEYLOCAL MAKASSAR", r: 4.79 },
@@ -89,7 +89,17 @@
                     { name: "HEYLOCAL SUNGAI PENUH", r: 3.59 }, { name: "HEYLOCAL SUN PLAZA MEDAN", r: 4.79 },
                     { name: "HEYLOCAL PIM", r: 5.59 }, { name: "HEYLOCAL WH SURABAYA", r: 4.79 },
                     { name: "HEYLOCAL LAMPUNG", r: 3.85 }, { name: "HEYLOCAL JAMBI", r: 3.85 }
-                ]
+                ],
+                // Rasio Spesifik SHOES (Sesuai Data Baru)
+                shoesRatios: {
+                    "HEYLOCAL ACEH": 5.54, "HEYLOCAL BALIKPAPAN": 4.06, "HEYLOCAL BXC": 7.73,
+                    "HEYLOCAL MAKASSAR": 3.70, "HEYLOCAL MEDAN OCBC": 5.76, "HEYLOCAL PADANG": 8.35,
+                    "HEYLOCAL PAKUWON MALL BEKASI": 5.47, "HEYLOCAL PALEMBANG": 5.83, "HEYLOCAL PEJATEN": 6.49,
+                    "HEYLOCAL PEKANBARU": 6.71, "HEYLOCAL SAMARINDA": 3.01, "HEYLOCAL SENTUL": 4.54,
+                    "HEYLOCAL BANDUNG": 6.93, "HEYLOCAL SUMMARECON MALL BEKASI": 5.47,
+                    "HEYLOCAL SUNGAI PENUH": 4.46, "HEYLOCAL SUN PLAZA MEDAN": 3.94, "HEYLOCAL PIM": 4.89,
+                    "HEYLOCAL WH SURABAYA": 4.11, "HEYLOCAL LAMPUNG": 3.01, "HEYLOCAL JAMBI": 0
+                }
             }
         };
 
@@ -148,7 +158,7 @@
                 storeCells += `<td><input type="number" id="store-${i}-${rowId}" oninput="updateManual('${rowId}', ${i})" class="text-center font-bold text-slate-700" value="0"></td>`;
             });
 
-            const catOptions = (currentBrand === 'HEYLOCAL' ? ['SCARF', 'SHIRT', 'PANTS'] : ['SHIRT', 'PANTS', 'JACKET']).map(c => `<option value="${c}">${c}</option>`).join('');
+            const catOptions = (currentBrand === 'HEYLOCAL' ? ['SHOES', 'SCARF', 'SHIRT', 'PANTS'] : ['SHIRT', 'PANTS', 'JACKET']).map(c => `<option value="${c}">${c}</option>`).join('');
 
             tr.innerHTML = `<td class="sticky-left"><input type="text" value="${currentBrand}" class="font-bold"></td><td><input type="text" placeholder="KODE"></td><td><input type="text" placeholder="SKU"></td><td><input type="text" placeholder="NAMA"></td><td><select onchange="calculateRow('${rowId}')" id="cat-${rowId}">${catOptions}</select></td><td><input type="text" class="text-center"></td><td><input type="number"></td><td><input type="text"></td><td class="bg-blue-50/30"><input type="number" id="qty-${rowId}" oninput="calculateRow('${rowId}')" class="font-black text-blue-700 text-center"></td><td id="online-${rowId}" class="text-center font-bold text-indigo-700">0</td><td id="offline-${rowId}" class="text-center font-bold text-orange-700">0</td>${storeCells}<td id="total-${rowId}" class="text-center font-bold">0</td><td id="stock-${rowId}" class="text-center text-green-600 font-bold bg-green-50">0</td><td id="sisa-${rowId}" class="text-center text-red-600 font-bold bg-red-50">0</td><td><button onclick="removeRow('${rowId}')" class="text-slate-300 hover:text-red-500 font-bold text-xl">×</button></td>`;
             document.getElementById('tableBody').appendChild(tr);
@@ -157,24 +167,38 @@
         function calculateRow(rowId) {
             const brandData = config[currentBrand];
             const qtyPo = parseInt(document.getElementById(`qty-${rowId}`).value) || 0;
+            const category = document.getElementById(`cat-${rowId}`).value;
             const qtyOn = Math.round(qtyPo * brandData.ratioOn);
             const qtyOff = qtyPo - qtyOn;
             
             document.getElementById(`online-${rowId}`).innerText = qtyOn;
             document.getElementById(`offline-${rowId}`).innerText = qtyOff;
 
-            const totalRatio = brandData.stores.reduce((sum, s) => sum + s.r, 0);
             let offResults = new Array(brandData.stores.length).fill(0);
             let distributed = 0;
             
-            // Perhitungan Proporsional untuk semua store termasuk MUKU
+            // Logika Rasio Berdasarkan Kategori (Khusus SHOES Heylocal)
+            const currentRatios = (currentBrand === 'HEYLOCAL' && category === 'SHOES') 
+                ? brandData.shoesRatios 
+                : null;
+
             brandData.stores.forEach((s, i) => {
-                const share = Math.floor(qtyOff * (s.r / totalRatio));
+                let ratioVal;
+                if (currentRatios) {
+                    // Gunakan rasio sepatu jika ada
+                    ratioVal = currentRatios[s.name] || 0;
+                } else {
+                    // Gunakan rasio default proporsional
+                    const totalDefaultRatio = brandData.stores.reduce((sum, st) => sum + st.r, 0);
+                    ratioVal = (s.r / totalDefaultRatio) * 100;
+                }
+                
+                const share = Math.floor(qtyOff * (ratioVal / 100));
                 offResults[i] = share;
                 distributed += share;
             });
 
-            // Bagi Sisa (Remainders)
+            // Bagi Sisa (Remainders) secara seimbang
             let rem = qtyOff - distributed;
             let idx = 0;
             while(rem > 0) {
@@ -212,14 +236,9 @@
             const targetOffOriginal = parseInt(document.getElementById(`offline-${rowId}`).innerText) || 0;
             const targetOnOriginal = parseInt(document.getElementById(`online-${rowId}`).innerText) || 0;
 
-            // LOGIKA BORROWING: Jika offline berlebih, ambil dari jatah online
             let sisaOff = targetOffOriginal - offSum;
             let effectiveOnTarget = targetOnOriginal;
-            
-            if (sisaOff < 0) {
-                effectiveOnTarget = targetOnOriginal + sisaOff; // SisaOff negatif berarti jatah On berkurang
-            }
-
+            if (sisaOff < 0) effectiveOnTarget = targetOnOriginal + sisaOff;
             let sisaOn = effectiveOnTarget - onSum;
 
             if (currentView === 'offline') {
@@ -227,14 +246,13 @@
                 document.getElementById(`stock-${rowId}`).innerText = offSum;
                 const sc = document.getElementById(`sisa-${rowId}`);
                 sc.innerText = sisaOff;
-                // Jika negatif, warnai Orange untuk tanda peminjaman dari Online
-                sc.className = `text-center font-bold ${sisaOff < 0 ? 'bg-orange-500 text-white rounded' : (sisaOff === 0 ? 'bg-red-50 text-red-600' : 'bg-red-50 text-red-600')}`;
+                sc.className = `text-center font-bold ${sisaOff < 0 ? 'bg-orange-500 text-white rounded' : 'text-red-600'}`;
             } else {
                 document.getElementById(`total-${rowId}`).innerText = onSum;
                 document.getElementById(`stock-${rowId}`).innerText = onSum;
                 const sc = document.getElementById(`sisa-${rowId}`);
                 sc.innerText = sisaOn;
-                sc.className = `text-center font-bold ${sisaOn !== 0 ? 'bg-indigo-600 text-white rounded' : 'bg-blue-50 text-blue-600'}`;
+                sc.className = `text-center font-bold ${sisaOn !== 0 ? 'bg-indigo-600 text-white rounded' : 'text-blue-600'}`;
             }
         }
 
@@ -242,10 +260,7 @@
 
         async function saveToGSheet() {
             const scriptUrl = document.getElementById('scriptUrl').value.trim();
-            if(!scriptUrl || scriptUrl.includes("AKfycbwYZib...")) { 
-                alert("⚠️ Error: Masukkan URL Google Apps Script yang valid di kolom hidden scriptUrl!"); 
-                return; 
-            }
+            if(!scriptUrl) { alert("⚠️ Error: Masukkan URL Script!"); return; }
 
             const targetSheet = (currentView === 'offline' ? 'PARUNG ' : 'MALATEK ') + currentBrand;
             const rows = Array.from(document.querySelectorAll('#tableBody tr'));
@@ -272,24 +287,17 @@
                 return rowData;
             });
 
-            if(dataToSave.length === 0) return;
-
             const btn = document.getElementById('saveBtn');
             btn.disabled = true; btn.innerHTML = `<span class="loader"></span> Saving...`;
-            
             try {
-                // Gunakan mode no-cors untuk Web App GAS
                 await fetch(scriptUrl, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({ sheetName: targetSheet, data: dataToSave })
                 });
-                alert(`✅ Data berhasil terkirim ke sheet ${targetSheet}! Silakan periksa spreadsheet.`);
-            } catch (e) { 
-                alert('Gagal mengirim data. Pastikan URL Script benar dan sudah di-deploy sebagai Anyone.'); 
-            } finally { 
-                btn.disabled = false; btn.innerText = `Simpan ke GSheet`; 
-            }
+                alert(`✅ Berhasil terkirim ke ${targetSheet}!`);
+            } catch (e) { alert('Gagal mengirim data.'); }
+            finally { btn.disabled = false; btn.innerText = `Simpan ke GSheet`; }
         }
 
         window.onload = initBrandMode;
